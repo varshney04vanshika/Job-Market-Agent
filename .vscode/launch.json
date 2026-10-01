@@ -1,0 +1,40 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Market Intelligence (Demo)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": ["--demo"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Parse Unparsed Jobs (Batch 200)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": ["--parse", "--limit", "200"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Generate Market Report",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": ["--report"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Start Web Dashboard (app.py)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/app.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

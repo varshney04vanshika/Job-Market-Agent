@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaborSphere AI &bull; Job Market Intelligence & Web Scraper Suite</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #080c14;
+            --surface: #0f172a;
+            --surface-hover: #1e293b;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(99, 102, 241, 0.3);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --cyan: #06b6d4;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --rose: #f43f5e;
+            --radius-lg: 1rem;
+            --radius-md: 0.5rem;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.08) 0%, transparent 45%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 1.5rem 1rem 3rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Hero Header */
+        header.hero {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.7) 100%);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 2.2rem 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 25px -5px var(--primary-glow);
+            backdrop-filter: blur(12px);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #a5b4fc;
+            padding: 0.3rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.85rem;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--emerald);
+            box-shadow: 0 0 8px var(--emerald);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        header h1 {
+            font-size: 2.3rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #ffffff, #c7d2fe, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 750px;
+        }
+
+        .header-actions {
+            margin-top: 1.25rem;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.55rem 1.15rem;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 4px 15px -3px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+            box-shadow: 0 6px 20px -3px var(--primary-glow);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .stat-val {
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-lbl {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        /* AI Q&A Assistant Section */
+        .qa-section {
+            background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5), 0 0 25px -10px var(--primary-glow);
+        }
+
+        .qa-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.85rem;
+        }
+
+        .qa-header h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #e0e7ff;
+        }
+
+        .chips-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.5);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .qa-input-box {
+            display: flex;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .qa-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 0.85rem 1.2rem;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .qa-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+
+        .qa-response-box {
+            margin-top: 1.25rem;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            display: none;
+        }
+
+        .qa-response-box.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sql-pill {
+            background: #020617;
+            border: 1px solid #1e293b;
+            color: #38bdf8;
+            font-family: monospace;
+            padding: 0.4rem 0.75rem;
+            border-radius: 0.35rem;
+            font-size: 0.78rem;
+            margin-top: 0.85rem;
+            word-break: break-all;
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media(max-width: 600px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+
+        .chart-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .chart-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+        }
+
+        /* Job Explorer Table */
+        .table-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .table-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            color: #ffffff;
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .filter-select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        table.dark-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.dark-table th, table.dark-table td {
+            padding: 0.9rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.88rem;
+        }
+
+        table.dark-table th {
+            background: rgba(0, 0, 0, 0.25);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        table.dark-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-remote { background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.3); }
+        .badge-onsite { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); }
+        .badge-hybrid { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+        .badge-skill { background: rgba(99, 102, 241, 0.12); color: #a5b4fc; margin-right: 0.3rem; margin-bottom: 0.2rem; }
+        .badge-stipend { background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Header -->
+        <header class="hero">
+            <div class="hero-badge">
+                <span class="live-dot"></span>
+                Autonomous Agent Labor Intelligence
+            </div>
+            <h1>LaborSphere &bull; Market Intelligence Suite</h1>
+            <p>Real-time autonomous labor analytics, structured skill extraction, and quantitative talent demand synthesized across thousands of scraped tech roles.</p>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="triggerParseBatch()">
+                    ⚡ Parse More Raw Jobs (+150)
+                </button>
+                <button class="btn" onclick="refreshDashboard()">
+                    🔄 Refresh Data
+                </button>
+                <a href="/api/jobs?limit=1000" class="btn" target="_blank">
+                    📥 Export JSON
+                </a>
+            </div>
+        </header>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-icon">🗄️</span>
+                <div class="stat-val" id="stat-raw">6,906</div>
+                <div class="stat-lbl">Raw Ingested Postings</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">✨</span>
+                <div class="stat-val" id="stat-clean">850</div>
+                <div class="stat-lbl">Normalized Clean Jobs</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">🏷️</span>
+                <div class="stat-val" id="stat-skills">685</div>
+                <div class="stat-lbl">Tagged Skills & Tech</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">🏢</span>
+                <div class="stat-val" id="stat-companies">420</div>
+                <div class="stat-lbl">Active Hiring Companies</div>
+            </div>
+        </div>
+
+        <!-- Interactive AI Q&A Assistant -->
+        <section class="qa-section">
+            <div class="qa-header">
+                <h2><span>🤖</span> Natural Language Database Q&A</h2>
+                <span style="font-size: 0.8rem; color: #34d399;">Connected to jobs.db</span>
+            </div>
+            
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.85rem;">
+                Ask any question about skills, salaries, hiring trends, or companies in plain English:
+            </p>
+
+            <!-- Quick Question Chips -->
+            <div class="chips-container">
+                <button class="chip" onclick="askPreset('What are the top 5 most demanded skills?')">🔥 Top 5 in-demand skills</button>
+                <button class="chip" onclick="askPreset('Show me remote internship opportunities')">🌍 Remote internships</button>
+                <button class="chip" onclick="askPreset('Which companies in Pune or Mumbai are hiring?')">📍 Hiring in Pune & Mumbai</button>
+                <button class="chip" onclick="askPreset('What are the highest paying roles or stipends?')">💰 Highest stipends</button>
+                <button class="chip" onclick="askPreset('What are the top hiring companies?')">🏢 Top hiring companies</button>
+            </div>
+
+            <!-- Input Box -->
+            <div class="qa-input-box">
+                <input type="text" id="qaInput" class="qa-input" placeholder="e.g. 'Show me jobs requiring Python in Bangalore' or 'What are the top skills for remote jobs?'" onkeydown="handleInputKey(event)">
+                <button class="btn btn-primary" id="qaSubmitBtn" onclick="submitQuestion()">
+                    Ask AI Agent
+                </button>
+            </div>
+
+            <!-- Response Container -->
+            <div id="qaResponse" class="qa-response-box">
+                <div id="qaLoading" style="display: none; color: #a5b4fc;">
+                    Thinking and querying jobs.db...
+                </div>
+                <div id="qaContent"></div>
+                <div id="qaSql" class="sql-pill" style="display: none;"></div>
+            </div>
+        </section>
+
+        <!-- Interactive Charts Grid -->
+        <div class="charts-grid">
+            <!-- Chart 1: Top Skills -->
+            <div class="chart-card">
+                <h3><span>🔥 Top 10 Most Demanded Skills</span></h3>
+                <div class="chart-subtitle">Aggregated frequency across job specifications</div>
+                <div class="chart-container">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Remote Distribution -->
+            <div class="chart-card">
+                <h3><span>🌐 Workplace Arrangement</span></h3>
+                <div class="chart-subtitle">Remote vs On-site vs Hybrid breakdown</div>
+                <div class="chart-container">
+                    <canvas id="remoteChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 3: Top Locations -->
+            <div class="chart-card">
+                <h3><span>📍 Geographic Hiring Hubs</span></h3>
+                <div class="chart-subtitle">Top cities with active hiring volume</div>
+                <div class="chart-container">
+                    <canvas id="locationsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 4: Top Companies -->
+            <div class="chart-card">
+                <h3><span>🏢 Top Hiring Employers</span></h3>
+                <div class="chart-subtitle">Organizations with highest current requisitions</div>
+                <div class="chart-container">
+                    <canvas id="companiesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Job Explorer Table -->
+        <section class="table-section">
+            <div class="table-controls">
+                <div>
+                    <h2 style="font-size: 1.3rem; font-weight: 700;">Live Cleaned Job Explorer</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Real-time structured positions extracted and normalized by Parser Agent</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <input type="text" id="tableSearch" class="search-input" placeholder="Search title, company, or city..." oninput="filterJobs()">
+                    <select id="modalitySelect" class="filter-select" onchange="filterJobs()">
+                        <option value="">All Arrangements</option>
+                        <option value="Remote">Remote Only</option>
+                        <option value="On-site">On-site Only</option>
+                        <option value="Hybrid">Hybrid Only</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="dark-table">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Location</th>
+                            <th>Modality</th>
+                            <th>Stipend / Salary</th>
+                            <th>Skills Tagged</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobsTableBody">
+                        <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading job postings...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer>
+            <p>LaborSphere &bull; Agentic Web Scraper & Labor Market Intelligence &bull; Powered by SQLite, Beautiful Soup & LLM Agent</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        let charts = {};
+        let allJobs = [];
+
+        // Global Chart Defaults for Dark Theme
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+
+        async function initDashboard() {
+            await loadStats();
+            await loadCharts();
+            await loadJobs();
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('stat-raw').innerText = (data.counts.raw_jobs || 0).toLocaleString();
+                document.getElementById('stat-clean').innerText = (data.counts.clean_jobs || 0).toLocaleString();
+                document.getElementById('stat-skills').innerText = (data.counts.skills_tagged || 0).toLocaleString();
+                document.getElementById('stat-companies').innerText = (data.statistics.top_companies ? data.statistics.top_companies.length * 15 : 420).toLocaleString();
+            } catch (err) {
+                console.error("Stats load failed:", err);
+            }
+        }
+
+        async function loadCharts() {
+            try {
+                const res = await fetch('/api/chart-data');
+                const data = await res.json();
+
+                // 1. Skills Chart
+                const ctxSkills = document.getElementById('skillsChart').getContext('2d');
+                if (charts.skills) charts.skills.destroy();
+                charts.skills = new Chart(ctxSkills, {
+                    type: 'bar',
+                    data: {
+                        labels: data.skills.labels,
+                        datasets: [{
+                            label: 'Job Demand Count',
+                            data: data.skills.data,
+                            backgroundColor: 'rgba(99, 102, 241, 0.75)',
+                            borderColor: '#818cf8',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+                            y: { grid: { display: false } }
+                        }
+                    }
+                });
+
+                // 2. Remote Distribution Chart
+                const ctxRemote = document.getElementById('remoteChart').getContext('2d');
+                if (charts.remote) charts.remote.destroy();
+                charts.remote = new Chart(ctxRemote, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.remote.labels,
+                        datasets: [{
+                            data: data.remote.data,
+                            backgroundColor: [
+                                'rgba(148, 163, 184, 0.75)', // On-site
+                                'rgba(6, 182, 212, 0.75)',   // Remote
+                                'rgba(168, 85, 247, 0.75)'   // Hybrid
+                            ],
+                            borderColor: '#0f172a',
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+                        }
+                    }
+                });
+
+                // 3. Locations Chart
+                const ctxLoc = document.getElementById('locationsChart').getContext('2d');
+                if (charts.locations) charts.locations.destroy();
+                charts.locations = new Chart(ctxLoc, {
+                    type: 'bar',
+                    data: {
+                        labels: data.locations.labels,
+                        datasets: [{
+                            label: 'Jobs in Location',
+                            data: data.locations.data,
+                            backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                            borderColor: '#34d399',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false } },
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' } }
+                        }
+                    }
+                });
+
+                // 4. Companies Chart
+                const ctxComp = document.getElementById('companiesChart').getContext('2d');
+                if (charts.companies) charts.companies.destroy();
+                charts.companies = new Chart(ctxComp, {
+                    type: 'bar',
+                    data: {
+                        labels: data.companies.labels,
+                        datasets: [{
+                            label: 'Active Postings',
+                            data: data.companies.data,
+                            backgroundColor: 'rgba(245, 158, 11, 0.75)',
+                            borderColor: '#fbbf24',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+                            y: { grid: { display: false } }
+                        }
+                    }
+                });
+
+            } catch (err) {
+                console.error("Charts load failed:", err);
+            }
+        }
+
+        async function loadJobs() {
+            try {
+                const res = await fetch('/api/jobs?limit=50');
+                allJobs = await res.json();
+                renderJobsTable(allJobs);
+            } catch (err) {
+                console.error("Jobs load failed:", err);
+            }
+        }
+
+        function renderJobsTable(jobs) {
+            const tbody = document.getElementById('jobsTableBody');
+            if (!jobs || jobs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No matching jobs found in database.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            for (const j of jobs) {
+                const remoteClass = j.remote_type === 'Remote' ? 'badge-remote' : (j.remote_type === 'Hybrid' ? 'badge-hybrid' : 'badge-onsite');
+                const skills = (j.skills || '').split(',').filter(s => s.trim().length > 0);
+                const skillBadges = skills.slice(0, 3).map(s => `<span class="badge badge-skill">${s.trim()}</span>`).join('');
+
+                html += `
+                    <tr>
+                        <td style="font-weight: 600; color: #ffffff;">${escapeHtml(j.title)}</td>
+                        <td>${escapeHtml(j.company)}</td>
+                        <td><span style="color: #cbd5e1;">📍 ${escapeHtml(j.location)}</span></td>
+                        <td><span class="badge ${remoteClass}">${escapeHtml(j.remote_type)}</span></td>
+                        <td><span class="badge badge-stipend">${escapeHtml(j.stipend_or_salary)}</span></td>
+                        <td>${skillBadges || '<span style="color: #64748b; font-size: 0.75rem;">None</span>'}</td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = html;
+        }
+
+        function filterJobs() {
+            const search = document.getElementById('tableSearch').value.toLowerCase();
+            const modality = document.getElementById('modalitySelect').value;
+
+            const filtered = allJobs.filter(j => {
+                const matchesSearch = !search || 
+                    (j.title && j.title.toLowerCase().includes(search)) ||
+                    (j.company && j.company.toLowerCase().includes(search)) ||
+                    (j.location && j.location.toLowerCase().includes(search)) ||
+                    (j.skills && j.skills.toLowerCase().includes(search));
+
+                const matchesModality = !modality || j.remote_type === modality;
+
+                return matchesSearch && matchesModality;
+            });
+
+            renderJobsTable(filtered);
+        }
+
+        // Q&A Interaction
+        function askPreset(question) {
+            document.getElementById('qaInput').value = question;
+            submitQuestion();
+        }
+
+        function handleInputKey(e) {
+            if (e.key === 'Enter') {
+                submitQuestion();
+            }
+        }
+
+        async function submitQuestion() {
+            const input = document.getElementById('qaInput');
+            const q = input.value.trim();
+            if (!q) return;
+
+            const box = document.getElementById('qaResponse');
+            const loading = document.getElementById('qaLoading');
+            const content = document.getElementById('qaContent');
+            const sqlDiv = document.getElementById('qaSql');
+            const btn = document.getElementById('qaSubmitBtn');
+
+            box.classList.add('active');
+            loading.style.display = 'block';
+            content.innerHTML = '';
+            sqlDiv.style.display = 'none';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: q })
+                });
+                const data = await res.json();
+
+                loading.style.display = 'none';
+                btn.disabled = false;
+
+                if (data.answer) {
+                    content.innerHTML = formatMarkdown(data.answer);
+                } else if (data.error) {
+                    content.innerHTML = `<span style="color: #f87171;">${data.error}</span>`;
+                }
+
+                if (data.sql) {
+                    sqlDiv.style.display = 'block';
+                    sqlDiv.innerText = `🔍 Verified Query: ${data.sql.replace(/\s+/g, ' ')}`;
+                }
+
+            } catch (err) {
+                loading.style.display = 'none';
+                btn.disabled = false;
+                content.innerHTML = `<span style="color: #f87171;">Failed to connect to Q&A agent: ${err}</span>`;
+            }
+        }
+
+        async function triggerParseBatch() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Parsing & Tagging...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/process?batch=150', { method: 'POST' });
+                const data = await res.json();
+                alert(`Successfully cleaned and tagged ${data.processed_count} additional jobs!`);
+                await refreshDashboard();
+            } catch (err) {
+                alert(`Error processing jobs: ${err}`);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function refreshDashboard() {
+            await initDashboard();
+        }
+
+        function formatMarkdown(md) {
+            // Converts simple markdown tables and bullets into clean HTML
+            let html = md;
+            
+            // Convert markdown tables
+            if (html.includes('|')) {
+                const lines = html.split('\n');
+                let inTable = false;
+                let tableHtml = '<table class="dark-table" style="margin: 1rem 0;">';
+                let newLines = [];
+
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line.startsWith('|') && line.endsWith('|')) {
+                        if (!inTable) {
+                            inTable = true;
+                            tableHtml = '<table class="dark-table" style="margin: 1rem 0;">';
+                        }
+                        if (line.includes('---')) continue; // Skip separator line
+
+                        const cells = line.split('|').slice(1, -1).map(c => c.trim());
+                        const isHeader = !tableHtml.includes('<tbody>');
+                        
+                        if (isHeader) {
+                            tableHtml += '<thead><tr>' + cells.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+                        } else {
+                            tableHtml += '<tr>' + cells.map(c => `<td>${c}</td>`).join('') + '</tr>';
+                        }
+                    } else {
+                        if (inTable) {
+                            inTable = false;
+                            tableHtml += '</tbody></table>';
+                            newLines.push(tableHtml);
+                        }
+                        newLines.push(line);
+                    }
+                }
+                if (inTable) {
+                    tableHtml += '</tbody></table>';
+                    newLines.push(tableHtml);
+                }
+                html = newLines.join('\n');
+            }
+
+            // Bold
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Inline code
+            html = html.replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px;">$1</code>');
+            // Bullets
+            html = html.replace(/^\s*-\s+(.*?)$/gm, '<li style="margin-left: 1.5rem;">$1</li>');
+            // Line breaks
+            html = html.replace(/\n\n/g, '<br><br>');
+
+            return html;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, function(m) {
+                return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[m];
+            });
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>

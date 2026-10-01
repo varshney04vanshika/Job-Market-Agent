@@ -3,3 +3,6 @@ venv/
 .env
 __pycache__/
 *.db
+reports/*.csv
+reports/*.html
+reports/*.md

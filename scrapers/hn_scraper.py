@@ -10,20 +10,28 @@ HN_ITEM_URL = "https://hacker-news.firebaseio.com/v0/item/{}.json"
 
 
 def get_current_thread_id():
-    """Find the latest 'Who is hiring?' thread automatically."""
-    params = {"query": "Who is hiring", "tags": "story", "hitsPerPage": 1}
-    resp = requests.get(ALGOLIA_SEARCH_URL, params=params, timeout=10)
+    params = {"tags": "story,author_whoishiring", "hitsPerPage": 5}
+    resp = requests.get(ALGOLIA_SEARCH_URL, params=params, timeout=15)
     resp.raise_for_status()
     hits = resp.json().get("hits", [])
-    if not hits:
-        raise RuntimeError("Could not find a 'Who is hiring' thread.")
-    return int(hits[0]["objectID"])
+    for hit in hits:
+        if hit["title"].startswith("Ask HN: Who is hiring?"):
+            return int(hit["objectID"])
+    raise RuntimeError("Could not find a 'Who is hiring' thread.")
 
 
-def fetch_item(item_id):
-    resp = requests.get(HN_ITEM_URL.format(item_id), timeout=10)
-    resp.raise_for_status()
-    return resp.json()
+def fetch_item(item_id, retries=3, timeout=20):
+    for attempt in range(1, retries + 1):
+        try:
+            resp = requests.get(HN_ITEM_URL.format(item_id), timeout=timeout)
+            resp.raise_for_status()
+            return resp.json()
+        except requests.exceptions.RequestException as e:
+            if attempt == retries:
+                print(f"  Failed on item {item_id} after {retries} tries: {e}")
+                return None
+            time.sleep(1.5 * attempt)  # back off a bit longer each retry
+    return None
 
 
 def scrape_and_save(thread_id=None, delay=0.3):
@@ -32,17 +40,25 @@ def scrape_and_save(thread_id=None, delay=0.3):
         print(f"Using latest thread: {thread_id}")
 
     thread = fetch_item(thread_id)
+    if thread is None:
+        print("Could not fetch the thread itself. Try again later.")
+        return
+
     comment_ids = thread.get("kids", [])
     print(f"Found {len(comment_ids)} postings in thread {thread_id}")
 
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    inserted, skipped, empty = 0, 0, 0
+    inserted, skipped, empty, failed = 0, 0, 0, 0
     for i, comment_id in enumerate(comment_ids, start=1):
         comment = fetch_item(comment_id)
-        text = comment.get("text")
 
+        if comment is None:
+            failed += 1
+            continue
+
+        text = comment.get("text")
         if not text:
             empty += 1
             continue
@@ -62,14 +78,18 @@ def scrape_and_save(thread_id=None, delay=0.3):
             skipped += 1
 
         if i % 20 == 0:
+            conn.commit()  # save progress periodically
             print(f"Processed {i}/{len(comment_ids)}...")
 
-        time.sleep(delay)  # be polite to the free API
+        time.sleep(delay)
 
     conn.commit()
     conn.close()
-    print(f"Done. Inserted: {inserted}, Skipped (duplicates): {skipped}, Empty/deleted: {empty}")
+    print(
+        f"Done. Inserted: {inserted}, Skipped (duplicates): {skipped}, "
+        f"Empty/deleted: {empty}, Failed after retries: {failed}"
+    )
 
 
 if __name__ == "__main__":
-    scrape_and_save()
+    scrape_and_save(thread_id=49522897)
