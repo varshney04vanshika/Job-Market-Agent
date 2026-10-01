@@ -3,956 +3,4673 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaborSphere AI &bull; Job Market Intelligence & Web Scraper Suite</title>
-    <!-- Chart.js CDN -->
+    <title>JobIQ - Market Intelligence</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='9' fill='%230a5f8d'/%3E%3Cpath d='M15 14v-3a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round'/%3E%3Crect x='6' y='14' width='28' height='20' rx='4.5' fill='white'/%3E%3Crect x='11.5' y='24' width='4' height='6' rx='1.2' fill='%230a5f8d'/%3E%3Crect x='18' y='20.5' width='4' height='9.5' rx='1.2' fill='%230a5f8d'/%3E%3Crect x='24.5' y='17' width='4' height='13' rx='1.2' fill='%230a5f8d'/%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        :root {
-            --bg: #080c14;
-            --surface: #0f172a;
-            --surface-hover: #1e293b;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-glow: rgba(99, 102, 241, 0.3);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, 0.4);
-            --cyan: #06b6d4;
-            --emerald: #10b981;
-            --amber: #f59e0b;
-            --rose: #f43f5e;
-            --radius-lg: 1rem;
-            --radius-md: 0.5rem;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --sidebar: #20262d;
+            --sidebar-hover: #303840;
+            --sidebar-active: #414a53;
+
+            --background: #f5f5f2;
+            --card: #ffffff;
+            --input: #fafafa;
+
+            --text: #252b32;
+            --muted: #747c84;
+            --border: #e2e4e6;
+
+            --green: #4e9b79;
+            --green-light: #eaf5ef;
+
+            --orange: #c99155;
+            --orange-light: #faf1e7;
+
+            --pink: #c8788d;
+            --pink-light: #f9eef1;
+
+            --grey: #7b858f;
+
+            --shadow: 0 5px 20px rgba(30, 35, 40, 0.05);
+        }
+
+        body.dark-mode {
+            --sidebar: #15191d;
+            --sidebar-hover: #252b31;
+            --sidebar-active: #343c44;
+
+            --background: #181b1f;
+            --card: #22272c;
+            --input: #292e33;
+
+            --text: #f1f3f4;
+            --muted: #a4abb2;
+            --border: #353b41;
+
+            --green: #68b894;
+            --green-light: #24372f;
+
+            --orange: #d5a36a;
+            --orange-light: #3a3025;
+
+            --pink: #d88c9e;
+            --pink-light: #39282e;
+
+            --grey: #9da6ae;
+
+            --shadow: 0 5px 20px rgba(0, 0, 0, 0.18);
+        }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: var(--bg);
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.08) 0%, transparent 45%);
-            color: var(--text-main);
+            font-family: "Merriweather", Georgia, "Times New Roman", serif;
+            background: var(--background);
+            color: var(--text);
             min-height: 100vh;
-            padding: 1.5rem 1rem 3rem 1rem;
-            line-height: 1.6;
         }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
+        button,
+        input,
+        select {
+            font-family: inherit;
         }
 
-        /* Hero Header */
-        header.hero {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.7) 100%);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-lg);
-            padding: 2.2rem 2rem;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 25px -5px var(--primary-glow);
-            backdrop-filter: blur(12px);
-        }
+        /* =========================
+           LAYOUT
+        ========================= */
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(99, 102, 241, 0.15);
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            color: #a5b4fc;
-            padding: 0.3rem 0.85rem;
-            border-radius: 9999px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.85rem;
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--emerald);
-            box-shadow: 0 0 8px var(--emerald);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.4; }
-            50% { opacity: 1; }
-            100% { opacity: 0.4; }
-        }
-
-        header h1 {
-            font-size: 2.3rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            background: linear-gradient(to right, #ffffff, #c7d2fe, #38bdf8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-
-        header p {
-            color: var(--text-muted);
-            font-size: 1.05rem;
-            max-width: 750px;
-        }
-
-        .header-actions {
-            margin-top: 1.25rem;
+        .app {
             display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
+            min-height: 100vh;
         }
 
-        .btn {
-            background: var(--surface-hover);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 0.55rem 1.15rem;
-            border-radius: var(--radius-md);
-            font-size: 0.88rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 235px;
+            min-height: 100vh;
+            background: var(--sidebar);
+            color: white;
+            padding: 24px 16px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 11px;
+            padding: 0 10px 30px;
         }
 
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            color: var(--sidebar);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
-            border-color: rgba(99, 102, 241, 0.5);
-            box-shadow: 0 4px 15px -3px var(--primary-glow);
+        .logo-text h1 {
+            font-size: 20px;
+            font-weight: 700;
         }
 
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
-            box-shadow: 0 6px 20px -3px var(--primary-glow);
+        .logo-text p {
+            font-size: 11px;
+            color: #aeb6bd;
+            margin-top: 2px;
         }
 
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 2rem;
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
-        .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1.4rem;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            transition: border-color 0.2s, transform 0.2s;
+        .nav-item {
+            border: none;
+            background: transparent;
+            color: #d8dde1;
+            width: 100%;
+            padding: 12px 13px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            transition: 0.2s;
         }
 
-        .stat-card:hover {
-            border-color: var(--border-glow);
-            transform: translateY(-2px);
+        .nav-item:hover {
+            background: var(--sidebar-hover);
         }
 
-        .stat-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            display: inline-block;
+        .nav-item.active {
+            background: var(--sidebar-active);
+            color: white;
         }
 
-        .stat-val {
-            font-size: 2.1rem;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -0.02em;
+        .nav-icon {
+            width: 21px;
+            text-align: center;
+            font-size: 17px;
         }
 
-        .stat-lbl {
-            font-size: 0.82rem;
-            color: var(--text-muted);
+        .sidebar-divider {
+            height: 1px;
+            background: #414850;
+            margin: 24px 8px 18px;
+        }
+
+        .quick-title {
+            font-size: 11px;
+            color: #9da5ac;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-top: 0.25rem;
+            letter-spacing: 0.7px;
+            padding: 0 13px 8px;
         }
 
-        /* AI Q&A Assistant Section */
-        .qa-section {
-            background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            border-radius: var(--radius-lg);
-            padding: 1.75rem;
-            margin-bottom: 2.5rem;
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5), 0 0 25px -10px var(--primary-glow);
+        .quick-action {
+            border: none;
+            background: transparent;
+            color: #d8dde1;
+            padding: 10px 13px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: left;
         }
 
-        .qa-header {
+        .quick-action:hover {
+            background: var(--sidebar-hover);
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+        }
+
+        .connection {
+            border: 1px solid #48525b;
+            border-radius: 9px;
+            padding: 12px;
+            margin: 0 7px 18px;
+        }
+
+        .connection-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            background: #55b98b;
+            border-radius: 50%;
+        }
+
+        .connection small {
+            display: block;
+            color: #9fa8b0;
+            margin-top: 7px;
+            font-size: 10px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #f4f5f4;
+            color: #252b32;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .profile-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .profile-role {
+            font-size: 10px;
+            color: #aeb6bd;
+            margin-top: 3px;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            margin-left: 235px;
+            width: calc(100% - 235px);
+            min-height: 100vh;
+        }
+
+        /* =========================
+           TOPBAR
+        ========================= */
+
+        .topbar {
+            height: 70px;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 1.25rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 0.85rem;
+            padding: 0 34px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        .qa-header h2 {
-            font-size: 1.35rem;
-            font-weight: 700;
+        .search-box {
+            width: 430px;
+            height: 42px;
+            background: var(--input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            color: #e0e7ff;
+            padding: 0 14px;
+            gap: 10px;
         }
 
-        .chips-container {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.25rem;
+        .search-box span {
+            color: var(--muted);
         }
 
-        .chip {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
-            padding: 0.35rem 0.85rem;
-            border-radius: 9999px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .chip:hover {
-            background: rgba(99, 102, 241, 0.2);
-            border-color: rgba(99, 102, 241, 0.5);
-            color: #ffffff;
-            transform: translateY(-1px);
-        }
-
-        .qa-input-box {
-            display: flex;
-            gap: 0.75rem;
-            position: relative;
-        }
-
-        .qa-input {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            padding: 0.85rem 1.2rem;
-            border-radius: var(--radius-md);
-            font-size: 0.95rem;
+        .search-box input {
+            border: none;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            background: transparent;
+            width: 100%;
+            color: var(--text);
+            font-size: 13px;
         }
 
-        .qa-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
         }
 
-        .qa-response-box {
-            margin-top: 1.25rem;
-            background: rgba(0, 0, 0, 0.35);
+        .icon-button {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
             border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 1.25rem;
-            display: none;
+            background: var(--card);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 16px;
         }
 
-        .qa-response-box.active {
+        .icon-button:hover {
+            background: var(--background);
+        }
+
+        .date {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+            border-left: 1px solid var(--border);
+            padding-left: 18px;
+        }
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .content {
+            padding: 30px 34px 50px;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .page.active {
             display: block;
-            animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .sql-pill {
-            background: #020617;
-            border: 1px solid #1e293b;
-            color: #38bdf8;
-            font-family: monospace;
-            padding: 0.4rem 0.75rem;
-            border-radius: 0.35rem;
-            font-size: 0.78rem;
-            margin-top: 0.85rem;
-            word-break: break-all;
-        }
-
-        /* Charts Grid */
-        .charts-grid {
+        .page-header {
+            margin-bottom: 28px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
+            grid-template-columns: 1fr auto;
+            column-gap: 24px;
+            align-items: center;
         }
 
-        @media(max-width: 600px) {
-            .charts-grid { grid-template-columns: 1fr; }
+        .page-header .header-art {
+            grid-column: 2;
+            grid-row: 1 / span 2;
+            width: 150px;
+            height: auto;
         }
 
-        .chart-card {
-            background: var(--surface);
+        @media (max-width: 700px) {
+            .page-header .header-art { display: none; }
+        }
+
+        .page-header h2 {
+            font-size: 27px;
+            margin-bottom: 7px;
+        }
+
+        .page-header p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* =========================
+           HOME
+        ========================= */
+
+        .welcome {
+            min-height: 230px;
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-
-        .chart-card h3 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #e2e8f0;
-            margin-bottom: 0.35rem;
+            border-radius: 14px;
+            background: linear-gradient(
+                120deg,
+                var(--card),
+                #f4f1eb
+            );
             display: flex;
             align-items: center;
             justify-content: space-between;
+            padding: 38px 45px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        body.dark-mode .welcome {
+            background: var(--card);
+        }
+
+        .welcome-text {
+            max-width: 650px;
+        }
+
+        .welcome-small {
+            color: #6d7882;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+        }
+
+        .welcome h2 {
+            font-size: 30px;
+            margin-bottom: 12px;
+        }
+
+        .welcome p {
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .welcome-art {
+            flex-shrink: 0;
+            line-height: 0;
+            padding-left: 20px;
+        }
+
+        .welcome-art svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .home-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .primary-button {
+            border: none;
+            background: var(--green);
+            color: var(--on-accent);
+            padding: 11px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .secondary-button {
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            padding: 11px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .primary-button:hover,
+        .secondary-button:hover {
+            opacity: 0.85;
+        }
+
+        /* =========================
+           KPI
+        ========================= */
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .kpi-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 23px;
+            box-shadow: var(--shadow);
+        }
+
+        .kpi-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .green-icon {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .orange-icon {
+            background: var(--orange-light);
+            color: var(--violet);
+        }
+
+        .pink-icon {
+            background: var(--pink-light);
+            color: var(--pink);
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 18px;
+        }
+
+        .kpi-value {
+            font-size: 29px;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .kpi-change {
+            color: var(--green);
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* =========================
+           ANALYTICS
+        ========================= */
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 23px;
+            box-shadow: var(--shadow);
+            min-height: 350px;
+        }
+
+        .chart-card.full {
+            grid-column: span 2;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
         }
 
         .chart-subtitle {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 1.25rem;
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 20px;
         }
 
         .chart-container {
             position: relative;
-            height: 280px;
-            width: 100%;
+            height: 260px;
         }
 
-        /* Job Explorer Table */
-        .table-section {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1.75rem;
-            margin-bottom: 2.5rem;
+        /* =========================
+           AI ASSISTANT
+        ========================= */
+
+        /* Colour themes.
+           Five slots per theme (names are legacy):
+           --green = primary, --violet = secondary, --blue / --orange / --pink = extras.
+           Default theme is Ocean. Themes are switched with data-palette on #assistant. */
+
+        #assistant {
+            --ai-font: "Merriweather", Georgia, "Times New Roman", serif;
+            --ai-display: "Merriweather", Georgia, "Times New Roman", serif;
+            --aurora: linear-gradient(120deg, var(--green), var(--violet) 55%, var(--pink));
         }
 
-        .table-controls {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
+        /* ---------- SITE-WIDE COLOUR THEMES (set on <body data-palette>) ---------- */
+
+        body {
+            --danger: #c8445f;
+            --on-accent: #ffffff;
+            --tint: #0a5f8d;
+
+            /* Ocean */
+            --green: #0a5f8d;
+            --violet: #0b7f95;
+            --blue: #3b82f6;
+            --orange: #8fd8ec;
+            --pink: #2fbfae;
         }
 
-        .search-box {
+        body.dark-mode {
+            --tint: #4aa8e0;
+            --danger: #f0869b;
+            --on-accent: #07202b;
+            --green: #4aa8e0;
+            --violet: #3cc0d0;
+            --blue: #6aa0ff;
+            --orange: #a6e6f3;
+            --pink: #5fe0cc;
+        }
+
+        /* Berry */
+        body[data-palette="berry"] {
+            --green: #a61e4d;
+            --violet: #d6336c;
+            --blue: #f06595;
+            --orange: #f4a6c0;
+            --pink: #ff6b6b;
+        }
+
+        body.dark-mode[data-palette="berry"] {
+            --on-accent: #2a0a14;
+            --green: #f06595;
+            --violet: #e64980;
+            --blue: #ff8aa8;
+            --orange: #fcc2d7;
+            --pink: #ff9a8a;
+        }
+
+        /* Violet */
+        body[data-palette="violet"] {
+            --green: #5b34d6;
+            --violet: #8b5cf6;
+            --blue: #6277f2;
+            --orange: #b79bfa;
+            --pink: #d07ae3;
+        }
+
+        body.dark-mode[data-palette="violet"] {
+            --on-accent: #120a2e;
+            --green: #8b6cf5;
+            --violet: #a98bfa;
+            --blue: #7c93f8;
+            --orange: #c9b4fc;
+            --pink: #dc95ec;
+        }
+
+        /* Classic (the original multicolour look) */
+        body[data-palette="classic"] {
+            --green: #3f8a68;
+            --violet: #4f7fe0;
+            --blue: #c99155;
+            --orange: #c8788d;
+            --pink: #9078e6;
+        }
+
+        body.dark-mode[data-palette="classic"] {
+            --on-accent: #101418;
+            --green: #68b894;
+            --violet: #7aa2f7;
+            --blue: #d5a36a;
+            --orange: #d88c9e;
+            --pink: #a898f0;
+        }
+
+        /* Graphite (monochrome with one blue accent) */
+        body[data-palette="graphite"] {
+            --green: #252b32;
+            --violet: #3d4651;
+            --blue: #5f6b78;
+            --orange: #aab3bd;
+            --pink: #3b82f6;
+        }
+
+        body.dark-mode[data-palette="graphite"] {
+            --on-accent: #14181d;
+            --green: #e8ecf1;
+            --violet: #c3cbd4;
+            --blue: #9aa5b1;
+            --orange: #6b7683;
+            --pink: #6aa5ff;
+        }
+
+        body[data-palette="berry"] { --tint: #a61e4d; }
+        body[data-palette="violet"] { --tint: #5b34d6; }
+        body[data-palette="classic"] { --tint: #4e5a66; }
+        body[data-palette="graphite"] { --tint: #5f6b78; }
+        body.dark-mode[data-palette="berry"] { --tint: #f06595; }
+        body.dark-mode[data-palette="violet"] { --tint: #8b6cf5; }
+        body.dark-mode[data-palette="classic"] { --tint: #8a97a4; }
+        body.dark-mode[data-palette="graphite"] { --tint: #9aa5b1; }
+
+        /* Surfaces that follow the chosen theme everywhere on the site */
+        body[data-palette] {
+            --sidebar: color-mix(in srgb, var(--tint) 30%, #12171c);
+            --sidebar-hover: color-mix(in srgb, var(--tint) 40%, #12171c);
+            --sidebar-active: color-mix(in srgb, var(--tint) 55%, #12171c);
+            --background: color-mix(in srgb, var(--tint) 6%, #f6f6f4);
+            --border: color-mix(in srgb, var(--tint) 14%, #e4e6e8);
+            --green-light: color-mix(in srgb, var(--green) 12%, #ffffff);
+            --orange-light: color-mix(in srgb, var(--violet) 12%, #ffffff);
+            --pink-light: color-mix(in srgb, var(--pink) 14%, #ffffff);
+        }
+
+        body.dark-mode[data-palette] {
+            --sidebar: color-mix(in srgb, var(--tint) 22%, #0e1216);
+            --sidebar-hover: color-mix(in srgb, var(--tint) 32%, #0e1216);
+            --sidebar-active: color-mix(in srgb, var(--tint) 46%, #0e1216);
+            --background: color-mix(in srgb, var(--tint) 7%, #15181c);
+            --card: color-mix(in srgb, var(--tint) 6%, #21262b);
+            --input: color-mix(in srgb, var(--tint) 7%, #282d32);
+            --border: color-mix(in srgb, var(--tint) 16%, #33393f);
+            --green-light: color-mix(in srgb, var(--green) 18%, #22272c);
+            --orange-light: color-mix(in srgb, var(--violet) 18%, #22272c);
+            --pink-light: color-mix(in srgb, var(--pink) 18%, #22272c);
+        }
+
+        body { transition: background 0.25s, color 0.25s; }
+        .sidebar, .card, .kpi-card, .chart-card { transition: background 0.25s, border-color 0.25s; }
+
+        .custom-swatch {
             position: relative;
-            flex: 1;
-            min-width: 250px;
+            background: conic-gradient(#e64980, #f59f00, #40c057, #228be6, #7950f2, #e64980) !important;
+            overflow: hidden;
         }
 
-        .search-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            color: #ffffff;
-            padding: 0.6rem 1rem;
-            border-radius: var(--radius-md);
-            font-size: 0.88rem;
-            outline: none;
-        }
-
-        .search-input:focus {
-            border-color: var(--primary);
-        }
-
-        .filter-select {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 0.6rem 1rem;
-            border-radius: var(--radius-md);
-            font-size: 0.88rem;
-            outline: none;
+        .custom-swatch input {
+            position: absolute;
+            inset: -6px;
+            width: 40px;
+            height: 40px;
+            opacity: 0;
             cursor: pointer;
         }
 
-        table.dark-table {
-            width: 100%;
-            border-collapse: collapse;
+        .top-actions .swatches { margin-right: 4px; }
+
+        .ai-shell {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            height: calc(100vh - 140px);
+            min-height: 540px;
+            display: flex;
+            flex-direction: column;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            font-family: var(--ai-font);
+            color: var(--text);
         }
 
-        table.dark-table th, table.dark-table td {
-            padding: 0.9rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.88rem;
+        .ai-shell::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 3px;
+            z-index: 2;
+            background: linear-gradient(90deg, var(--blue), var(--green), var(--violet), var(--orange), var(--pink));
         }
 
-        table.dark-table th {
-            background: rgba(0, 0, 0, 0.25);
-            color: var(--text-muted);
+        .ai-shell button,
+        .ai-shell textarea {
+            font-family: inherit;
+        }
+
+        .ai-shell button:focus-visible,
+        .ai-shell textarea:focus-visible {
+            outline: 2px solid var(--text);
+            outline-offset: 2px;
+        }
+
+        /* ---------- top bar ---------- */
+
+        .ai-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ai-id {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ai-id .orb {
+            width: 34px;
+            height: 34px;
+            margin-top: 0;
+        }
+
+        .ai-id h3 {
+            font-family: var(--ai-display);
+            font-size: 15px;
             font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
+            letter-spacing: -0.01em;
         }
 
-        table.dark-table tr:hover {
-            background: rgba(255, 255, 255, 0.02);
+        .ai-id p {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 22%, transparent);
+        }
+
+        .ghost-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: transparent;
+            color: var(--text);
+            font-size: 12.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .ghost-btn:hover {
+            background: var(--background);
+            border-color: var(--muted);
+        }
+
+        .ghost-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .bar-tools {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .swatches {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .swatch {
+            width: 18px;
+            height: 18px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--a), var(--b));
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .swatch:hover {
+            transform: scale(1.15);
+        }
+
+        .swatch[aria-pressed="true"] {
+            box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--text);
+        }
+
+        @media (max-width: 600px) {
+            .swatches {
+                gap: 6px;
+            }
+
+            .swatch {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        /* ---------- orb (the one colourful moment) ---------- */
+
+        .orb {
+            position: relative;
+            flex-shrink: 0;
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            overflow: hidden;
+            isolation: isolate;
+            box-shadow:
+                0 14px 36px -10px color-mix(in srgb, var(--pink) 60%, transparent),
+                0 4px 16px -6px color-mix(in srgb, var(--green) 50%, transparent);
+        }
+
+        .orb::before {
+            content: "";
+            position: absolute;
+            inset: -25%;
+            z-index: -1;
+            background: conic-gradient(from 0deg, var(--green), var(--orange), var(--pink), var(--green));
+            filter: blur(8px);
+            animation: orbSpin 12s linear infinite;
+        }
+
+        .orb::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.8), transparent 46%),
+                radial-gradient(circle at 70% 88%, rgba(0, 0, 0, 0.16), transparent 55%);
+        }
+
+        .orb.mini {
+            width: 28px;
+            height: 28px;
+            margin-top: 2px;
+            box-shadow: 0 4px 12px -4px color-mix(in srgb, var(--pink) 65%, transparent);
+        }
+
+        .orb.mini::before {
+            filter: blur(3px);
+        }
+
+        .orb.thinking::before {
+            animation-duration: 2s;
+        }
+
+        @keyframes orbSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ---------- conversation area ---------- */
+
+        .ai-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px 28px 10px;
+            scroll-behavior: smooth;
+        }
+
+        .ai-shell:not(.has-messages) .ai-scroll {
+            background-image:
+                radial-gradient(45% 40% at 18% 0%, color-mix(in srgb, var(--green) 16%, transparent), transparent 70%),
+                radial-gradient(45% 40% at 82% 0%, color-mix(in srgb, var(--pink) 16%, transparent), transparent 70%),
+                radial-gradient(40% 35% at 50% 8%, color-mix(in srgb, var(--violet) 14%, transparent), transparent 70%);
+        }
+
+        .ai-welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 1vh 0 12px;
+        }
+
+        .ai-welcome .orb {
+            width: 52px;
+            height: 52px;
+        }
+
+        .ai-shell.has-messages .ai-welcome {
+            display: none;
+        }
+
+        .ai-welcome h2 {
+            margin-top: 16px;
+            font-family: var(--ai-display);
+            text-wrap: balance;
+            font-size: clamp(22px, 2.8vw, 29px);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+        }
+
+        .ai-welcome > p {
+            max-width: 420px;
+            margin-top: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .prompt {
+            --accent: var(--text);
+            appearance: none;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 14px;
+            background: color-mix(in srgb, var(--accent) 7%, var(--card));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+
+        .prompt.green { --accent: var(--green); }
+        .prompt.orange { --accent: var(--orange); }
+        .prompt.pink { --accent: var(--pink); }
+        .prompt.violet { --accent: var(--violet); }
+
+        .prompt:hover {
+            border-color: var(--accent);
+            box-shadow: 0 10px 26px -14px color-mix(in srgb, var(--accent) 70%, transparent);
+        }
+
+        .prompt-icon {
+            display: grid;
+            flex-shrink: 0;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 20%, var(--card));
+        }
+
+        .prompt-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .prompt strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .prompt .desc {
+            display: block;
+            margin-top: 3px;
+            font-size: 12.5px;
+            line-height: 1.45;
+            color: var(--muted);
+        }
+
+        /* ---------- messages ---------- */
+
+        .msg {
+            display: flex;
+            gap: 12px;
+            max-width: 720px;
+            margin: 0 auto 24px;
+            animation: msgIn 0.24s ease;
+        }
+
+        @keyframes msgIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .msg.user {
+            justify-content: flex-end;
+        }
+
+        .msg.user .bubble {
+            max-width: 82%;
+            padding: 11px 16px;
+            background: linear-gradient(135deg, var(--green), var(--violet));
+            color: var(--on-accent);
+            border-radius: 18px 18px 4px 18px;
+            box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--green) 70%, transparent);
+            font-size: 14px;
+            line-height: 1.55;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .ai-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .answer {
+            font-size: 14.5px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .answer p {
+            margin: 0 0 10px;
+        }
+
+        .answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        .answer ul,
+        .answer ol {
+            margin: 0 0 10px;
+            padding-left: 22px;
+        }
+
+        .answer li {
+            margin: 4px 0;
+            padding-left: 2px;
+        }
+
+        .answer li::marker {
+            color: var(--muted);
+        }
+
+        .answer strong {
+            font-weight: 600;
+        }
+
+        .answer code {
+            padding: 1px 6px;
+            border-radius: 6px;
+            background: var(--background);
+            border: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .answer.error {
+            color: var(--danger);
+        }
+
+        .msg-actions {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+            margin-left: -8px;
+        }
+
+        .mini-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 8px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .mini-btn:hover {
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .mini-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .typing {
+            display: flex;
+            gap: 5px;
+            padding: 11px 0;
+        }
+
+        .typing i {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .typing i:nth-child(2) {
+            background: var(--orange);
+            animation-delay: 0.15s;
+        }
+
+        .typing i:nth-child(3) {
+            background: var(--pink);
+            animation-delay: 0.3s;
+        }
+
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.55;
+            }
+            30% {
+                transform: translateY(-5px);
+                opacity: 1;
+            }
+        }
+
+        /* ---------- composer ---------- */
+
+        .ai-composer {
+            padding: 10px 20px 14px;
+        }
+
+        .composer-box {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 7px 7px 7px 18px;
+            border: 1.5px solid transparent;
+            border-radius: 26px;
+            background:
+                linear-gradient(var(--input), var(--input)) padding-box,
+                linear-gradient(var(--border), var(--border)) border-box;
+            transition: box-shadow 0.2s;
+        }
+
+        .composer-box:focus-within {
+            background:
+                linear-gradient(var(--card), var(--card)) padding-box,
+                var(--aurora) border-box;
+            box-shadow: 0 10px 30px -16px color-mix(in srgb, var(--pink) 70%, transparent);
+        }
+
+        .composer-box textarea {
+            flex: 1;
+            min-height: 24px;
+            max-height: 140px;
+            padding: 9px 0;
+            border: none;
+            outline: none;
+            resize: none;
+            background: transparent;
+            color: var(--text);
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
+        .composer-box textarea::placeholder {
+            color: var(--muted);
+        }
+
+        .composer-box textarea:focus-visible {
+            outline: none;
+        }
+
+        .send-button {
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: var(--text);
+            color: var(--card);
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.15s, background 0.15s;
+        }
+
+        .send-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .send-button:not(:disabled) {
+            background: linear-gradient(135deg, var(--green), var(--violet) 55%, var(--pink));
+            color: var(--on-accent);
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform: scale(1.06);
+        }
+
+        .send-button:disabled {
+            background: var(--border);
+            color: var(--muted);
+            cursor: not-allowed;
+        }
+
+        .composer-hint {
+            margin-top: 8px;
+            text-align: center;
+            font-size: 11.5px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 600px) {
+            .ai-shell {
+                border-radius: 16px;
+                height: calc(100vh - 130px);
+            }
+
+            .ai-scroll {
+                padding: 20px 16px 8px;
+            }
+
+            .prompt-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ai-composer {
+                padding: 8px 12px 12px;
+            }
+
+            .composer-hint {
+                display: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .orb::before,
+            .typing i,
+            .msg {
+                animation: none;
+            }
+
+            .ai-scroll {
+                scroll-behavior: auto;
+            }
+        }
+
+
+        /* ---------- market snapshot (live data) ---------- */
+
+        .snapshot {
+            width: 100%;
+            margin-top: 18px;
+            text-align: left;
+        }
+
+        .snapshot[hidden] {
+            display: none;
+        }
+
+        .snap-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .link-btn {
+            border: none;
+            background: transparent;
+            color: var(--blue);
+            font-size: 12.5px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 6px;
+            padding: 2px 4px;
+        }
+
+        .link-btn:hover {
+            text-decoration: underline;
+        }
+
+        .snap-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .snap-card {
+            padding: 12px 14px 10px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            min-width: 0;
+        }
+
+        .snap-card h4 {
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .bars {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .bar-row {
+            display: grid;
+            grid-template-columns: minmax(48px, 30%) 1fr auto;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .bar-label {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .bar-track {
+            height: 8px;
+            border-radius: 99px;
+            background: var(--background);
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 99px;
+            background: var(--c);
+            transition: width 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        .bar-value {
+            min-width: 22px;
+            text-align: right;
+            font-size: 11.5px;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .split-bar {
+            display: flex;
+            height: 10px;
+            gap: 2px;
+            margin: 4px 0 10px;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .split-bar span {
+            display: block;
+            background: var(--c);
+            transition: flex 0.7s ease;
+        }
+
+        .split-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .split-legend div {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .split-legend i {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--c);
+        }
+
+        .split-legend b {
+            margin-left: auto;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        /* ---------- chart inside an answer ---------- */
+
+        .answer-chart {
+            margin-top: 14px;
+            padding: 14px 16px 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .answer-chart h4 {
+            margin-bottom: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .answer-chart .bar-row {
+            grid-template-columns: minmax(70px, 28%) 1fr auto;
+            font-size: 13px;
+        }
+
+        .answer-chart .bar-track {
+            height: 10px;
+        }
+
+        /* ---------- results table ---------- */
+
+        .msg.wide {
+            max-width: 844px;
+        }
+
+        .tbl {
+            margin: 6px 0 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            overflow-wrap: normal;
+        }
+
+        .tbl-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 8px 6px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .tbl-scroll {
+            overflow-x: auto;
+        }
+
+        .answer-table {
+            width: 100%;
+            min-width: 680px;
+            border-collapse: collapse;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .answer-table th {
+            padding: 9px 12px;
+            text-align: left;
+            white-space: nowrap;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            background: color-mix(in srgb, var(--text) 3%, var(--card));
+            border-bottom: 1px solid var(--border);
+        }
+
+        .th-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .th-btn:hover,
+        .th-btn[data-dir="asc"],
+        .th-btn[data-dir="desc"] {
+            color: var(--text);
+        }
+
+        .th-btn .arrow {
+            display: inline-block;
+            min-width: 10px;
+            font-style: normal;
+        }
+
+        .th-btn .arrow::after {
+            content: "\2195";
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .th-btn:hover .arrow::after {
+            opacity: 0.45;
+        }
+
+        .th-btn[data-dir="desc"] .arrow::after {
+            content: "\2193";
+            opacity: 1;
+        }
+
+        .th-btn[data-dir="asc"] .arrow::after {
+            content: "\2191";
+            opacity: 1;
+        }
+
+        .answer-table td {
+            padding: 11px 12px;
+            vertical-align: middle;
+            border-top: 1px solid var(--border);
+        }
+
+        .answer-table tbody tr:first-child td {
+            border-top: none;
+        }
+
+        .answer-table tbody tr:hover td {
+            background: color-mix(in srgb, var(--text) 3%, var(--card));
+        }
+
+        .answer-table .rank {
+            width: 44px;
+            padding-right: 0;
+        }
+
+        .rank-chip {
+            display: inline-grid;
+            place-items: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--background);
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .tbl.by-pay tbody tr:nth-child(1) .rank-chip {
+            background: linear-gradient(135deg, var(--green), var(--violet) 55%, var(--pink));
+            color: var(--on-accent);
+        }
+
+        .tbl.by-pay tbody tr:nth-child(2) .rank-chip {
+            background: color-mix(in srgb, var(--blue) 24%, var(--card));
+            color: var(--text);
+        }
+
+        .tbl.by-pay tbody tr:nth-child(3) .rank-chip {
+            background: color-mix(in srgb, var(--violet) 24%, var(--card));
+            color: var(--text);
+        }
+
+        .tbl.by-pay tbody tr:nth-child(1) td {
+            background: color-mix(in srgb, var(--green) 8%, var(--card));
+        }
+
+        .answer-table td.pay {
+            min-width: 128px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .paybar {
+            display: block;
+            width: 84px;
+            max-width: 100%;
+            height: 4px;
+            margin-top: 6px;
+            border-radius: 99px;
+            background: var(--background);
+            overflow: hidden;
+        }
+
+        .paybar i {
+            display: block;
+            height: 100%;
+            border-radius: 99px;
+            background: var(--green);
         }
 
         .badge {
-            display: inline-block;
-            padding: 0.2rem 0.6rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
+            --tone: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 99px;
+            background: color-mix(in srgb, var(--tone) 15%, var(--card));
+            box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 30%, transparent);
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .badge::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--tone);
+        }
+
+        .badge.green { --tone: var(--green); }
+        .badge.blue { --tone: var(--muted); }
+        .badge.violet { --tone: var(--pink); }
+
+        @media (max-width: 800px) {
+            .snap-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bar-fill,
+            .split-bar span {
+                transition: none;
+            }
+        }
+
+/* =========================
+           JOB EXPLORER
+        ========================= */
+
+        .job-controls {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .job-controls input,
+        .job-controls select {
+            border: 1px solid var(--border);
+            background: var(--input);
+            color: var(--text);
+            border-radius: 8px;
+            padding: 11px 13px;
+            outline: none;
+        }
+
+        .job-controls input {
+            flex: 1;
+        }
+
+        .job-table-wrapper {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            overflow-x: auto;
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th {
+            text-align: left;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 500;
+            padding: 15px;
+            background: var(--input);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .job-title {
             font-weight: 600;
         }
 
-        .badge-remote { background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.3); }
-        .badge-onsite { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); }
-        .badge-hybrid { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
-        .badge-skill { background: rgba(99, 102, 241, 0.12); color: #a5b4fc; margin-right: 0.3rem; margin-bottom: 0.2rem; }
-        .badge-stipend { background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge {
+            padding: 5px 8px;
+            border-radius: 15px;
+            font-size: 10px;
+        }
 
-        footer {
+        .remote {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .onsite {
+            background: var(--orange-light);
+            color: var(--violet);
+        }
+
+        /* =========================
+           INSIGHTS
+        ========================= */
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .insight-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .insight-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 18px;
+        }
+
+        .insight-card h3 {
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .insight-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .insight-value {
+            font-size: 25px;
+            font-weight: 700;
+            margin-top: 14px;
+        }
+
+        /* =========================
+           EMPTY / LOADING
+        ========================= */
+
+        .loading {
             text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: 3rem;
-            border-top: 1px solid var(--border);
-            padding-top: 1.5rem;
+            color: var(--muted);
+            padding: 40px;
+        }
+
+        .error {
+            color: #c65b67;
+            padding: 20px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+            .sidebar {
+                width: 205px;
+            }
+
+            .main {
+                margin-left: 205px;
+                width: calc(100% - 205px);
+            }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-card.full {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                min-height: auto;
+                height: auto;
+            }
+
+            .app {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .nav {
+                flex-direction: row;
+                overflow-x: auto;
+            }
+
+            .nav-item {
+                min-width: 120px;
+            }
+
+            .quick-title,
+            .quick-action,
+            .connection,
+            .sidebar-bottom,
+            .sidebar-divider {
+                display: none;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .search-box {
+                width: 250px;
+            }
+
+            .content {
+                padding: 22px 18px;
+            }
+
+            .kpi-grid,
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome {
+                padding: 28px;
+            }
+
+            .welcome-art {
+                display: none;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .topbar {
+                height: auto;
+                padding: 12px;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .search-box {
+                width: 100%;
+                order: 2;
+            }
+
+            .top-actions {
+                margin-left: auto;
+            }
+
+            .welcome h2 {
+                font-size: 24px;
+            }
+
+            .job-controls {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Hero Header -->
-        <header class="hero">
-            <div class="hero-badge">
-                <span class="live-dot"></span>
-                Autonomous Agent Labor Intelligence
+
+<body data-palette="ocean">
+
+<div class="app">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 40 40" width="30" height="30" aria-hidden="true">
+                    <path d="M15 14v-3a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3" fill="none" stroke="var(--green)" stroke-width="2.6" stroke-linecap="round"/>
+                    <rect x="6" y="14" width="28" height="20" rx="4.5" fill="var(--green)"/>
+                    <rect x="11.5" y="24" width="4" height="6" rx="1.2" fill="#fff"/>
+                    <rect x="18" y="20.5" width="4" height="9.5" rx="1.2" fill="#fff"/>
+                    <rect x="24.5" y="17" width="4" height="13" rx="1.2" fill="#fff"/>
+                </svg>
             </div>
-            <h1>LaborSphere &bull; Market Intelligence Suite</h1>
-            <p>Real-time autonomous labor analytics, structured skill extraction, and quantitative talent demand synthesized across thousands of scraped tech roles.</p>
-            <div class="header-actions">
-                <button class="btn btn-primary" onclick="triggerParseBatch()">
-                    ⚡ Parse More Raw Jobs (+150)
-                </button>
-                <button class="btn" onclick="refreshDashboard()">
-                    🔄 Refresh Data
-                </button>
-                <a href="/api/jobs?limit=1000" class="btn" target="_blank">
-                    📥 Export JSON
-                </a>
+
+            <div class="logo-text">
+                <h1>JobIQ</h1>
+                <p>Market Intelligence</p>
             </div>
+        </div>
+
+        <nav class="nav">
+
+            <button class="nav-item active" onclick="showPage('home', this)">
+                <span class="nav-icon">⌂</span>
+                <span>Home</span>
+            </button>
+
+            <button class="nav-item" onclick="showPage('analytics', this)">
+                <span class="nav-icon">▥</span>
+                <span>Analytics</span>
+            </button>
+
+            <button class="nav-item" onclick="showPage('assistant', this)">
+                <span class="nav-icon">✦</span>
+                <span>AI Assistant</span>
+            </button>
+
+            <button class="nav-item" onclick="showPage('jobs', this)">
+                <span class="nav-icon">▣</span>
+                <span>Job Explorer</span>
+            </button>
+
+            <button class="nav-item" onclick="showPage('insights', this)">
+                <span class="nav-icon">♧</span>
+                <span>Insights</span>
+            </button>
+
+        </nav>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="quick-title">Quick Actions</div>
+
+        <button class="quick-action" onclick="processJobs()">
+            <span>⚡</span>
+            <span>Process New Jobs</span>
+        </button>
+
+        <button class="quick-action" onclick="loadAllData()">
+            <span>↻</span>
+            <span>Refresh Data</span>
+        </button>
+
+        <div class="sidebar-bottom">
+
+            <div class="connection">
+                <div class="connection-row">
+                    <span class="status-dot"></span>
+                    <span>Database Connected</span>
+                </div>
+
+                <small id="lastSync">
+                    Last sync: checking...
+                </small>
+            </div>
+
+            <div class="profile">
+
+                <div class="avatar">
+                    V
+                </div>
+
+                <div>
+                    <div class="profile-name">
+                        Vanshika
+                    </div>
+
+                    <div class="profile-role">
+                        Student
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="search-box">
+
+                <span>⌕</span>
+
+                <input
+                    type="text"
+                    placeholder="Search jobs, skills, companies..."
+                    id="globalSearch"
+                    onkeydown="globalSearch(event)"
+                >
+
+            </div>
+
+            <div class="top-actions">
+
+                <div class="swatches" role="group" aria-label="Website colour theme">
+                    <button class="swatch" type="button" data-p="ocean" title="Ocean" aria-label="Ocean theme" aria-pressed="true" style="--a:#0a5f8d;--b:#2fbfae" onclick="setPalette('ocean')"></button>
+                    <button class="swatch" type="button" data-p="berry" title="Berry" aria-label="Berry theme" aria-pressed="false" style="--a:#a61e4d;--b:#ff6b6b" onclick="setPalette('berry')"></button>
+                    <button class="swatch" type="button" data-p="violet" title="Violet" aria-label="Violet theme" aria-pressed="false" style="--a:#5b34d6;--b:#d07ae3" onclick="setPalette('violet')"></button>
+                    <button class="swatch" type="button" data-p="classic" title="Classic" aria-label="Classic theme" aria-pressed="false" style="--a:#3f8a68;--b:#c8788d" onclick="setPalette('classic')"></button>
+                    <button class="swatch" type="button" data-p="graphite" title="Graphite" aria-label="Graphite theme" aria-pressed="false" style="--a:#252b32;--b:#3b82f6" onclick="setPalette('graphite')"></button>
+                    <label class="swatch custom-swatch" data-p="custom" title="Pick your own colour" aria-pressed="false">
+                        <input type="color" id="customColor" value="#0a5f8d" aria-label="Custom colour" oninput="setCustomColour(this.value)">
+                    </label>
+                </div>
+
+                <button
+                    class="icon-button"
+                    id="themeToggle"
+                    onclick="toggleTheme()"
+                    title="Toggle theme"
+                >
+                    ☾
+                </button>
+
+                <button
+                    class="icon-button"
+                    onclick="loadAllData()"
+                    title="Refresh"
+                >
+                    ↻
+                </button>
+
+                <div class="date">
+                    <div id="currentDate"></div>
+                    <div id="currentTime"></div>
+                </div>
+
+            </div>
+
         </header>
 
-        <!-- Stats Overview -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-icon">🗄️</span>
-                <div class="stat-val" id="stat-raw">6,906</div>
-                <div class="stat-lbl">Raw Ingested Postings</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon">✨</span>
-                <div class="stat-val" id="stat-clean">850</div>
-                <div class="stat-lbl">Normalized Clean Jobs</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon">🏷️</span>
-                <div class="stat-val" id="stat-skills">685</div>
-                <div class="stat-lbl">Tagged Skills & Tech</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon">🏢</span>
-                <div class="stat-val" id="stat-companies">420</div>
-                <div class="stat-lbl">Active Hiring Companies</div>
-            </div>
-        </div>
 
-        <!-- Interactive AI Q&A Assistant -->
-        <section class="qa-section">
-            <div class="qa-header">
-                <h2><span>🤖</span> Natural Language Database Q&A</h2>
-                <span style="font-size: 0.8rem; color: #34d399;">Connected to jobs.db</span>
-            </div>
-            
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.85rem;">
-                Ask any question about skills, salaries, hiring trends, or companies in plain English:
-            </p>
+        <div class="content">
 
-            <!-- Quick Question Chips -->
-            <div class="chips-container">
-                <button class="chip" onclick="askPreset('What are the top 5 most demanded skills?')">🔥 Top 5 in-demand skills</button>
-                <button class="chip" onclick="askPreset('Show me remote internship opportunities')">🌍 Remote internships</button>
-                <button class="chip" onclick="askPreset('Which companies in Pune or Mumbai are hiring?')">📍 Hiring in Pune & Mumbai</button>
-                <button class="chip" onclick="askPreset('What are the highest paying roles or stipends?')">💰 Highest stipends</button>
-                <button class="chip" onclick="askPreset('What are the top hiring companies?')">🏢 Top hiring companies</button>
-            </div>
 
-            <!-- Input Box -->
-            <div class="qa-input-box">
-                <input type="text" id="qaInput" class="qa-input" placeholder="e.g. 'Show me jobs requiring Python in Bangalore' or 'What are the top skills for remote jobs?'" onkeydown="handleInputKey(event)">
-                <button class="btn btn-primary" id="qaSubmitBtn" onclick="submitQuestion()">
-                    Ask AI Agent
-                </button>
-            </div>
+            <!-- =========================
+                 HOME
+            ========================== -->
 
-            <!-- Response Container -->
-            <div id="qaResponse" class="qa-response-box">
-                <div id="qaLoading" style="display: none; color: #a5b4fc;">
-                    Thinking and querying jobs.db...
+            <section id="home" class="page active">
+
+                <div class="welcome">
+
+                    <div class="welcome-text">
+
+                        <div class="welcome-small">
+                            Good morning, Vanshika
+                        </div>
+
+                        <h2>
+                            Welcome back 👋
+                        </h2>
+
+                        <p>
+                            Here's what's happening in the job market today.
+                            Explore real job data, understand market trends,
+                            and discover the skills companies are looking for.
+                        </p>
+
+                        <div class="home-actions">
+
+                            <button
+                                class="primary-button"
+                                onclick="showPageById('analytics')"
+                            >
+                                View Analytics
+                            </button>
+
+                            <button
+                                class="secondary-button"
+                                onclick="showPageById('assistant')"
+                            >
+                                Ask AI Assistant
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="welcome-art">
+                        <svg viewBox="0 0 360 232" width="330" role="img" aria-label="Illustration of a job market dashboard">
+                            <rect x="10" y="24" width="270" height="180" rx="16" fill="var(--card)" stroke="var(--border)" stroke-width="2"/>
+                            <path d="M10 54V40a16 16 0 0 1 16-16h238a16 16 0 0 1 16 16v14z" fill="var(--background)" stroke="var(--border)" stroke-width="2"/>
+                            <circle cx="28" cy="39" r="4.5" fill="var(--pink)"/><circle cx="43" cy="39" r="4.5" fill="var(--orange)"/><circle cx="58" cy="39" r="4.5" fill="var(--green)"/>
+                            <g fill="var(--green)">
+                                <rect x="30" y="140" width="20" height="32" rx="4" opacity=".55"/>
+                                <rect x="60" y="122" width="20" height="50" rx="4" opacity=".7"/>
+                                <rect x="90" y="130" width="20" height="42" rx="4" opacity=".6"/>
+                                <rect x="120" y="104" width="20" height="68" rx="4" opacity=".85"/>
+                                <rect x="150" y="84" width="20" height="88" rx="4"/>
+                            </g>
+                            <polyline points="40,122 70,102 100,110 130,82 160,64" fill="none" stroke="var(--pink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <g fill="var(--card)" stroke="var(--pink)" stroke-width="3"><circle cx="40" cy="122" r="4.5"/><circle cx="70" cy="102" r="4.5"/><circle cx="100" cy="110" r="4.5"/><circle cx="130" cy="82" r="4.5"/><circle cx="160" cy="64" r="4.5"/></g>
+                            <line x1="26" y1="174" x2="262" y2="174" stroke="var(--border)" stroke-width="2"/>
+                            <g transform="rotate(-90 226 104)" fill="none" stroke-width="13">
+                                <circle cx="226" cy="104" r="30" stroke="var(--border)"/>
+                                <circle cx="226" cy="104" r="30" stroke="var(--green)" stroke-dasharray="100 188.5"/>
+                                <circle cx="226" cy="104" r="30" stroke="var(--violet)" stroke-dasharray="52 188.5" stroke-dashoffset="-100"/>
+                                <circle cx="226" cy="104" r="30" stroke="var(--pink)" stroke-dasharray="36 188.5" stroke-dashoffset="-152"/>
+                            </g>
+                            <rect x="196" y="150" width="60" height="7" rx="3.5" fill="var(--border)"/>
+                            <rect x="196" y="163" width="40" height="7" rx="3.5" fill="var(--border)"/>
+                            <g transform="translate(236 150)">
+                                <rect width="104" height="76" rx="16" fill="var(--green)"/>
+                                <path d="M40 28v-6a5 5 0 0 1 5-5h14a5 5 0 0 1 5 5v6" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+                                <rect x="24" y="28" width="56" height="34" rx="7" fill="#fff"/>
+                                <line x1="24" y1="43" x2="80" y2="43" stroke="var(--green)" stroke-width="3"/>
+                                <rect x="46" y="39" width="12" height="8" rx="2" fill="var(--green)"/>
+                            </g>
+                            <circle cx="298" cy="58" r="23" fill="var(--card)" fill-opacity=".9" stroke="var(--violet)" stroke-width="6"/>
+                            <line x1="315" y1="75" x2="336" y2="96" stroke="var(--violet)" stroke-width="8" stroke-linecap="round"/>
+                            <path d="M287 62l7-7 6 5 8-10" fill="none" stroke="var(--violet)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <g stroke="var(--card)" stroke-width="3"><circle cx="44" cy="216" r="10" fill="var(--pink)"/><circle cx="62" cy="216" r="10" fill="var(--violet)"/><circle cx="80" cy="216" r="10" fill="var(--green)"/></g>
+                        </svg>
+                    </div>
+
                 </div>
-                <div id="qaContent"></div>
-                <div id="qaSql" class="sql-pill" style="display: none;"></div>
-            </div>
-        </section>
 
-        <!-- Interactive Charts Grid -->
-        <div class="charts-grid">
-            <!-- Chart 1: Top Skills -->
-            <div class="chart-card">
-                <h3><span>🔥 Top 10 Most Demanded Skills</span></h3>
-                <div class="chart-subtitle">Aggregated frequency across job specifications</div>
-                <div class="chart-container">
-                    <canvas id="skillsChart"></canvas>
-                </div>
-            </div>
 
-            <!-- Chart 2: Remote Distribution -->
-            <div class="chart-card">
-                <h3><span>🌐 Workplace Arrangement</span></h3>
-                <div class="chart-subtitle">Remote vs On-site vs Hybrid breakdown</div>
-                <div class="chart-container">
-                    <canvas id="remoteChart"></canvas>
-                </div>
-            </div>
+                <div class="kpi-grid">
 
-            <!-- Chart 3: Top Locations -->
-            <div class="chart-card">
-                <h3><span>📍 Geographic Hiring Hubs</span></h3>
-                <div class="chart-subtitle">Top cities with active hiring volume</div>
-                <div class="chart-container">
-                    <canvas id="locationsChart"></canvas>
-                </div>
-            </div>
+                    <div class="kpi-card">
 
-            <!-- Chart 4: Top Companies -->
-            <div class="chart-card">
-                <h3><span>🏢 Top Hiring Employers</span></h3>
-                <div class="chart-subtitle">Organizations with highest current requisitions</div>
-                <div class="chart-container">
-                    <canvas id="companiesChart"></canvas>
-                </div>
-            </div>
-        </div>
+                        <div class="kpi-top">
+                            <div>
+                                <div class="kpi-label">
+                                    Raw Job Postings
+                                </div>
 
-        <!-- Live Job Explorer Table -->
-        <section class="table-section">
-            <div class="table-controls">
-                <div>
-                    <h2 style="font-size: 1.3rem; font-weight: 700;">Live Cleaned Job Explorer</h2>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Real-time structured positions extracted and normalized by Parser Agent</p>
+                                <div
+                                    class="kpi-value"
+                                    id="rawJobs"
+                                >
+                                    —
+                                </div>
+                            </div>
+
+                            <div class="kpi-icon green-icon">
+                                ▤
+                            </div>
+                        </div>
+
+                        <div class="kpi-change">
+                            ● Data collected
+                        </div>
+
+                    </div>
+
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-top">
+                            <div>
+                                <div class="kpi-label">
+                                    Clean Job Records
+                                </div>
+
+                                <div
+                                    class="kpi-value"
+                                    id="cleanJobs"
+                                >
+                                    —
+                                </div>
+                            </div>
+
+                            <div class="kpi-icon orange-icon">
+                                ✓
+                            </div>
+                        </div>
+
+                        <div class="kpi-change">
+                            ● Processed jobs
+                        </div>
+
+                    </div>
+
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-top">
+                            <div>
+                                <div class="kpi-label">
+                                    Skills Tagged
+                                </div>
+
+                                <div
+                                    class="kpi-value"
+                                    id="skillsTagged"
+                                >
+                                    —
+                                </div>
+                            </div>
+
+                            <div class="kpi-icon pink-icon">
+                                ◇
+                            </div>
+                        </div>
+
+                        <div class="kpi-change">
+                            ● Skills extracted
+                        </div>
+
+                    </div>
+
                 </div>
-                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                    <input type="text" id="tableSearch" class="search-input" placeholder="Search title, company, or city..." oninput="filterJobs()">
-                    <select id="modalitySelect" class="filter-select" onchange="filterJobs()">
-                        <option value="">All Arrangements</option>
-                        <option value="Remote">Remote Only</option>
-                        <option value="On-site">On-site Only</option>
-                        <option value="Hybrid">Hybrid Only</option>
+
+            </section>
+
+
+            <!-- =========================
+                 ANALYTICS
+            ========================== -->
+
+            <section id="analytics" class="page">
+
+                <div class="page-header">
+
+                    <h2>
+                        Market Analytics
+                    </h2>
+
+                    <p>
+                        Understand job demand, skills, locations and companies.
+                    </p>
+
+                    <svg class="header-art" viewBox="0 0 160 100" role="img" aria-label="Analytics illustration">
+                        <rect x="4" y="6" width="152" height="88" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="2"/>
+                        <g fill="var(--green)"><rect x="20" y="52" width="16" height="30" rx="3" opacity=".6"/><rect x="44" y="38" width="16" height="44" rx="3" opacity=".8"/><rect x="68" y="46" width="16" height="36" rx="3" opacity=".7"/><rect x="92" y="26" width="16" height="56" rx="3"/></g>
+                        <polyline points="28,44 52,30 76,38 100,18" fill="none" stroke="var(--pink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="132" cy="44" r="14" fill="none" stroke="var(--border)" stroke-width="8"/>
+                        <circle cx="132" cy="44" r="14" fill="none" stroke="var(--violet)" stroke-width="8" stroke-dasharray="52 88" transform="rotate(-90 132 44)"/>
+                    </svg>
+
+                </div>
+
+
+                <div class="analytics-grid">
+
+                    <div class="chart-card">
+
+                        <div class="chart-title">
+                            Top Skills in Demand
+                        </div>
+
+                        <div class="chart-subtitle">
+                            Most frequently tagged skills
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="skillsChart"></canvas>
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-card">
+
+                        <div class="chart-title">
+                            Remote Work Distribution
+                        </div>
+
+                        <div class="chart-subtitle">
+                            Work arrangement breakdown
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="remoteChart"></canvas>
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-card">
+
+                        <div class="chart-title">
+                            Top Hiring Locations
+                        </div>
+
+                        <div class="chart-subtitle">
+                            Locations with the highest job volume
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="locationsChart"></canvas>
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-card">
+
+                        <div class="chart-title">
+                            Top Hiring Companies
+                        </div>
+
+                        <div class="chart-subtitle">
+                            Companies with the most listed openings
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="companiesChart"></canvas>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 AI ASSISTANT
+            ========================== -->
+
+            <section id="assistant" class="page">
+
+                <div class="ai-shell" id="aiShell">
+
+                    <header class="ai-bar">
+
+                        <div class="ai-id">
+                            <span class="orb" aria-hidden="true"></span>
+                            <div>
+                                <h3>JobIQ Assistant</h3>
+                                <p><span class="live-dot"></span>Answers from your job data</p>
+                            </div>
+                        </div>
+
+                        <div class="bar-tools">
+
+                            <div class="swatches" role="group" aria-label="Colour theme">
+                                <button class="swatch" type="button" data-p="ocean" title="Ocean" aria-label="Ocean theme" aria-pressed="true" style="--a:#0a5f8d;--b:#2fbfae" onclick="setPalette('ocean')"></button>
+                                <button class="swatch" type="button" data-p="berry" title="Berry" aria-label="Berry theme" aria-pressed="false" style="--a:#a61e4d;--b:#ff6b6b" onclick="setPalette('berry')"></button>
+                                <button class="swatch" type="button" data-p="violet" title="Violet" aria-label="Violet theme" aria-pressed="false" style="--a:#5b34d6;--b:#d07ae3" onclick="setPalette('violet')"></button>
+                                <button class="swatch" type="button" data-p="classic" title="Classic" aria-label="Classic multicolour theme" aria-pressed="false" style="--a:#3f8a68;--b:#c8788d" onclick="setPalette('classic')"></button>
+                                <button class="swatch" type="button" data-p="graphite" title="Graphite" aria-label="Graphite theme" aria-pressed="false" style="--a:#252b32;--b:#3b82f6" onclick="setPalette('graphite')"></button>
+                            </div>
+
+                            <button class="ghost-btn" type="button" onclick="newChat()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                                New chat
+                            </button>
+
+                        </div>
+
+                    </header>
+
+
+                    <div class="ai-scroll" id="chatArea" role="log" aria-live="polite">
+
+                        <div class="ai-welcome" id="aiWelcome">
+
+                            <span class="orb" aria-hidden="true"></span>
+
+                            <h2>Hi Vanshika, what do you want to look into?</h2>
+
+                            <p>Ask about jobs, skills, companies, locations or what to learn next.</p>
+
+                            <div class="prompt-grid">
+
+                                <button class="prompt green" type="button"
+                                    onclick="askSuggestion('What are the top skills in demand?')">
+                                    <span class="prompt-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20v-9"/><path d="M12 20V4"/><path d="M18 20v-6"/></svg>
+                                    </span>
+                                    <span>
+                                        <strong>Top skills in demand</strong>
+                                        <span class="desc">See what employers ask for most.</span>
+                                    </span>
+                                </button>
+
+                                <button class="prompt orange" type="button"
+                                    onclick="askSuggestion('Which companies have the most jobs?')">
+                                    <span class="prompt-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 8h.01M15 8h.01M9 12h.01M15 12h.01M10 21v-4h4v4"/></svg>
+                                    </span>
+                                    <span>
+                                        <strong>Top companies</strong>
+                                        <span class="desc">Find out who is hiring the most.</span>
+                                    </span>
+                                </button>
+
+                                <button class="prompt pink" type="button"
+                                    onclick="askSuggestion('What are the remote job trends?')">
+                                    <span class="prompt-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18"/></svg>
+                                    </span>
+                                    <span>
+                                        <strong>Remote job trends</strong>
+                                        <span class="desc">Compare remote and on-site roles.</span>
+                                    </span>
+                                </button>
+
+                                <button class="prompt violet" type="button"
+                                    onclick="askSuggestion('What skills should an AIML student learn?')">
+                                    <span class="prompt-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 17v4M17 19h4"/></svg>
+                                    </span>
+                                    <span>
+                                        <strong>Skills for AI &amp; ML</strong>
+                                        <span class="desc">Plan what to learn next as a student.</span>
+                                    </span>
+                                </button>
+
+                            </div>
+
+                            <div class="snapshot" id="aiSnapshot" hidden>
+
+                                <div class="snap-head">
+                                    <span>Market snapshot</span>
+                                    <button class="link-btn" type="button" onclick="showPageById('analytics')">Open Analytics</button>
+                                </div>
+
+                                <div class="snap-grid">
+
+                                    <div class="snap-card">
+                                        <h4>Top skills</h4>
+                                        <div class="bars" id="snapSkills"></div>
+                                    </div>
+
+                                    <div class="snap-card">
+                                        <h4>Work type</h4>
+                                        <div id="snapRemote"></div>
+                                    </div>
+
+                                    <div class="snap-card">
+                                        <h4>Top companies</h4>
+                                        <div class="bars" id="snapCompanies"></div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="ai-composer">
+
+                        <div class="composer-box">
+
+                            <textarea
+                                id="questionInput"
+                                rows="1"
+                                placeholder="Ask about jobs, skills or companies"
+                                aria-label="Ask the JobIQ assistant"
+                                onkeydown="handleQuestion(event)"
+                                oninput="autoGrow(this)"
+                            ></textarea>
+
+                            <button
+                                class="send-button"
+                                id="sendButton"
+                                type="button"
+                                aria-label="Send message"
+                                onclick="sendQuestion()"
+                                disabled
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                            </button>
+
+                        </div>
+
+                        <p class="composer-hint">Enter to send, Shift+Enter for a new line</p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 JOB EXPLORER
+            ========================== -->
+
+            <section id="jobs" class="page">
+
+                <div class="page-header">
+
+                    <h2>
+                        Job Explorer
+                    </h2>
+
+                    <p>
+                        Browse and filter the jobs available in your database.
+                    </p>
+
+                    <svg class="header-art" viewBox="0 0 160 100" role="img" aria-label="Job listings illustration">
+                        <rect x="4" y="6" width="104" height="88" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="2"/>
+                        <g fill="var(--border)"><rect x="40" y="22" width="56" height="7" rx="3.5"/><rect x="40" y="48" width="44" height="7" rx="3.5"/><rect x="40" y="74" width="52" height="7" rx="3.5"/></g>
+                        <circle cx="24" cy="26" r="8" fill="var(--green)"/><circle cx="24" cy="52" r="8" fill="var(--violet)"/><circle cx="24" cy="78" r="8" fill="var(--pink)"/>
+                        <g transform="translate(92 38)">
+                            <rect width="60" height="52" rx="11" fill="var(--green)"/>
+                            <path d="M20 16v-4a3.5 3.5 0 0 1 3.5-3.5h13A3.5 3.5 0 0 1 40 12v4" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+                            <rect x="9" y="16" width="42" height="26" rx="5" fill="#fff"/>
+                            <line x1="9" y1="28" x2="51" y2="28" stroke="var(--green)" stroke-width="2.5"/>
+                        </g>
+                    </svg>
+
+                </div>
+
+
+                <div class="job-controls">
+
+                    <input
+                        type="text"
+                        id="jobSearch"
+                        placeholder="Search title, company or location..."
+                        oninput="loadJobs()"
+                    >
+
+                    <select
+                        id="remoteFilter"
+                        onchange="loadJobs()"
+                    >
+                        <option value="">
+                            All work types
+                        </option>
+
+                        <option value="Remote">
+                            Remote
+                        </option>
+
+                        <option value="On-site">
+                            On-site
+                        </option>
                     </select>
+
                 </div>
-            </div>
 
-            <div style="overflow-x: auto;">
-                <table class="dark-table">
-                    <thead>
-                        <tr>
-                            <th>Job Title</th>
-                            <th>Company</th>
-                            <th>Location</th>
-                            <th>Modality</th>
-                            <th>Stipend / Salary</th>
-                            <th>Skills Tagged</th>
-                        </tr>
-                    </thead>
-                    <tbody id="jobsTableBody">
-                        <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading job postings...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
 
-        <footer>
-            <p>LaborSphere &bull; Agentic Web Scraper & Labor Market Intelligence &bull; Powered by SQLite, Beautiful Soup & LLM Agent</p>
-        </footer>
-    </div>
+                <div class="job-table-wrapper">
 
-    <!-- Scripts -->
-    <script>
-        let charts = {};
-        let allJobs = [];
+                    <table>
 
-        // Global Chart Defaults for Dark Theme
-        Chart.defaults.color = '#94a3b8';
-        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
-        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                        <thead>
 
-        async function initDashboard() {
-            await loadStats();
-            await loadCharts();
-            await loadJobs();
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Location</th>
+                                <th>Work Type</th>
+                                <th>Level</th>
+                                <th>Salary / Stipend</th>
+                                <th>Skills</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="jobsTable">
+
+                            <tr>
+                                <td colspan="7" class="loading">
+                                    Loading jobs...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 INSIGHTS
+            ========================== -->
+
+            <section id="insights" class="page">
+
+                <div class="page-header">
+
+                    <h2>
+                        Market Insights
+                    </h2>
+
+                    <p>
+                        Quick takeaways generated from the current database.
+                    </p>
+
+                    <svg class="header-art" viewBox="0 0 160 100" role="img" aria-label="Insights illustration">
+                        <rect x="4" y="6" width="152" height="88" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="2"/>
+                        <g transform="translate(48 14)">
+                            <path d="M32 6a22 22 0 0 0-12 40v8a4 4 0 0 0 4 4h16a4 4 0 0 0 4-4v-8A22 22 0 0 0 32 6z" fill="var(--orange)" opacity=".85"/>
+                            <rect x="22" y="58" width="20" height="5" rx="2.5" fill="var(--violet)"/>
+                            <path d="M25 30l5 6 9-12" fill="none" stroke="var(--card)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </g>
+                        <g stroke="var(--pink)" stroke-width="3" stroke-linecap="round"><line x1="30" y1="26" x2="38" y2="32"/><line x1="26" y1="48" x2="36" y2="48"/><line x1="130" y1="26" x2="122" y2="32"/><line x1="134" y1="48" x2="124" y2="48"/></g>
+                        <g fill="var(--green)"><rect x="24" y="72" width="26" height="6" rx="3"/><rect x="110" y="72" width="26" height="6" rx="3" opacity=".6"/></g>
+                    </svg>
+
+                </div>
+
+
+                <div class="insights-grid">
+
+                    <div class="insight-card">
+
+                        <div class="insight-icon green-icon">
+                            ↗
+                        </div>
+
+                        <h3>
+                            Most In-Demand Skill
+                        </h3>
+
+                        <p>
+                            Based on the number of tagged skills in the
+                            current job database.
+                        </p>
+
+                        <div
+                            class="insight-value"
+                            id="topSkillInsight"
+                        >
+                            —
+                        </div>
+
+                    </div>
+
+
+                    <div class="insight-card">
+
+                        <div class="insight-icon orange-icon">
+                            ◉
+                        </div>
+
+                        <h3>
+                            Top Hiring Location
+                        </h3>
+
+                        <p>
+                            Location with the highest number of job postings
+                            in the current dataset.
+                        </p>
+
+                        <div
+                            class="insight-value"
+                            id="topLocationInsight"
+                        >
+                            —
+                        </div>
+
+                    </div>
+
+
+                    <div class="insight-card">
+
+                        <div class="insight-icon pink-icon">
+                            ▣
+                        </div>
+
+                        <h3>
+                            Leading Company
+                        </h3>
+
+                        <p>
+                            Company with the highest number of job listings
+                            in the current database.
+                        </p>
+
+                        <div
+                            class="insight-value"
+                            id="topCompanyInsight"
+                        >
+                            —
+                        </div>
+
+                    </div>
+
+
+                    <div class="insight-card">
+
+                        <div class="insight-icon green-icon">
+                            ☁
+                        </div>
+
+                        <h3>
+                            Remote Opportunities
+                        </h3>
+
+                        <p>
+                            Number of remote jobs available in the current
+                            processed dataset.
+                        </p>
+
+                        <div
+                            class="insight-value"
+                            id="remoteInsight"
+                        >
+                            —
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /* =========================
+       GLOBAL VARIABLES
+    ========================== */
+
+    let statsData = null;
+
+    let charts = {};
+
+
+    /* =========================
+       PAGE NAVIGATION
+    ========================== */
+
+    function showPage(pageId, clickedButton = null) {
+
+        document.querySelectorAll(".page").forEach(page => {
+            page.classList.remove("active");
+        });
+
+        const target = document.getElementById(pageId);
+
+        if (target) {
+            target.classList.add("active");
         }
 
-        async function loadStats() {
-            try {
-                const res = await fetch('/api/stats');
-                const data = await res.json();
-                document.getElementById('stat-raw').innerText = (data.counts.raw_jobs || 0).toLocaleString();
-                document.getElementById('stat-clean').innerText = (data.counts.clean_jobs || 0).toLocaleString();
-                document.getElementById('stat-skills').innerText = (data.counts.skills_tagged || 0).toLocaleString();
-                document.getElementById('stat-companies').innerText = (data.statistics.top_companies ? data.statistics.top_companies.length * 15 : 420).toLocaleString();
-            } catch (err) {
-                console.error("Stats load failed:", err);
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        if (clickedButton) {
+            clickedButton.classList.add("active");
+        } else {
+
+            document.querySelectorAll(".nav-item").forEach(item => {
+
+                if (
+                    item.getAttribute("onclick") &&
+                    item.getAttribute("onclick").includes("'" + pageId + "'")
+                ) {
+                    item.classList.add("active");
+                }
+
+            });
+
+        }
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        if (pageId === "jobs") {
+            loadJobs();
+        }
+
+        if (pageId === "analytics") {
+            setTimeout(() => {
+                createCharts();
+            }, 50);
+        }
+
+    }
+
+
+    function showPageById(pageId) {
+        showPage(pageId);
+    }
+
+
+    /* =========================
+       LOAD STATS
+    ========================== */
+
+    async function loadStats() {
+
+        try {
+
+            const response = await fetch("/api/stats");
+
+            if (!response.ok) {
+                throw new Error("Failed to load statistics");
             }
-        }
 
-        async function loadCharts() {
-            try {
-                const res = await fetch('/api/chart-data');
-                const data = await res.json();
+            const data = await response.json();
 
-                // 1. Skills Chart
-                const ctxSkills = document.getElementById('skillsChart').getContext('2d');
-                if (charts.skills) charts.skills.destroy();
-                charts.skills = new Chart(ctxSkills, {
-                    type: 'bar',
-                    data: {
-                        labels: data.skills.labels,
-                        datasets: [{
-                            label: 'Job Demand Count',
-                            data: data.skills.data,
-                            backgroundColor: 'rgba(99, 102, 241, 0.75)',
-                            borderColor: '#818cf8',
-                            borderWidth: 1,
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            x: { grid: { color: 'rgba(255,255,255,0.05)' } },
-                            y: { grid: { display: false } }
-                        }
-                    }
-                });
+            statsData = data;
 
-                // 2. Remote Distribution Chart
-                const ctxRemote = document.getElementById('remoteChart').getContext('2d');
-                if (charts.remote) charts.remote.destroy();
-                charts.remote = new Chart(ctxRemote, {
-                    type: 'doughnut',
-                    data: {
-                        labels: data.remote.labels,
-                        datasets: [{
-                            data: data.remote.data,
-                            backgroundColor: [
-                                'rgba(148, 163, 184, 0.75)', // On-site
-                                'rgba(6, 182, 212, 0.75)',   // Remote
-                                'rgba(168, 85, 247, 0.75)'   // Hybrid
-                            ],
-                            borderColor: '#0f172a',
-                            borderWidth: 3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
-                        }
-                    }
-                });
+            const counts = data.counts || {};
+            const statistics = data.statistics || {};
 
-                // 3. Locations Chart
-                const ctxLoc = document.getElementById('locationsChart').getContext('2d');
-                if (charts.locations) charts.locations.destroy();
-                charts.locations = new Chart(ctxLoc, {
-                    type: 'bar',
-                    data: {
-                        labels: data.locations.labels,
-                        datasets: [{
-                            label: 'Jobs in Location',
-                            data: data.locations.data,
-                            backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                            borderColor: '#34d399',
-                            borderWidth: 1,
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            x: { grid: { display: false } },
-                            y: { grid: { color: 'rgba(255,255,255,0.05)' } }
-                        }
-                    }
-                });
+            document.getElementById("rawJobs").textContent =
+                formatNumber(counts.raw_jobs || 0);
 
-                // 4. Companies Chart
-                const ctxComp = document.getElementById('companiesChart').getContext('2d');
-                if (charts.companies) charts.companies.destroy();
-                charts.companies = new Chart(ctxComp, {
-                    type: 'bar',
-                    data: {
-                        labels: data.companies.labels,
-                        datasets: [{
-                            label: 'Active Postings',
-                            data: data.companies.data,
-                            backgroundColor: 'rgba(245, 158, 11, 0.75)',
-                            borderColor: '#fbbf24',
-                            borderWidth: 1,
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            x: { grid: { color: 'rgba(255,255,255,0.05)' } },
-                            y: { grid: { display: false } }
-                        }
-                    }
-                });
+            document.getElementById("cleanJobs").textContent =
+                formatNumber(counts.clean_jobs || 0);
 
-            } catch (err) {
-                console.error("Charts load failed:", err);
+            document.getElementById("skillsTagged").textContent =
+                formatNumber(counts.skills_tagged || 0);
+
+
+            /* INSIGHTS */
+
+            const topSkills = statistics.top_skills || [];
+            const topLocations = statistics.top_locations || [];
+            const topCompanies = statistics.top_companies || [];
+            const remoteTypes = statistics.remote_types || [];
+
+
+            if (topSkills.length > 0) {
+                document.getElementById("topSkillInsight").textContent =
+                    topSkills[0].skill;
             }
-        }
 
-        async function loadJobs() {
-            try {
-                const res = await fetch('/api/jobs?limit=50');
-                allJobs = await res.json();
-                renderJobsTable(allJobs);
-            } catch (err) {
-                console.error("Jobs load failed:", err);
+            if (topLocations.length > 0) {
+                document.getElementById("topLocationInsight").textContent =
+                    topLocations[0].location;
             }
+
+            if (topCompanies.length > 0) {
+                document.getElementById("topCompanyInsight").textContent =
+                    topCompanies[0].company;
+            }
+
+
+            const remoteJob = remoteTypes.find(
+                item => item.remote_type === "Remote"
+            );
+
+            document.getElementById("remoteInsight").textContent =
+                formatNumber(remoteJob ? remoteJob.count : 0);
+
+
+            document.getElementById("lastSync").textContent =
+                "Last sync: " + new Date().toLocaleTimeString(
+                    [],
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                );
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("rawJobs").textContent = "—";
+            document.getElementById("cleanJobs").textContent = "—";
+            document.getElementById("skillsTagged").textContent = "—";
+
         }
 
-        function renderJobsTable(jobs) {
-            const tbody = document.getElementById('jobsTableBody');
-            if (!jobs || jobs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No matching jobs found in database.</td></tr>';
+    }
+
+
+    /* =========================
+       CHART DATA
+    ========================== */
+
+    async function createCharts() {
+
+        try {
+
+            const response = await fetch("/api/chart-data");
+
+            if (!response.ok) {
+                throw new Error("Chart data failed");
+            }
+
+            const data = await response.json();
+
+
+            createChart(
+                "skillsChart",
+                "bar",
+                data.skills.labels,
+                data.skills.data,
+                "Skills"
+            );
+
+
+            createChart(
+                "remoteChart",
+                "doughnut",
+                data.remote.labels,
+                data.remote.data,
+                "Jobs"
+            );
+
+
+            createChart(
+                "locationsChart",
+                "bar",
+                data.locations.labels,
+                data.locations.data,
+                "Jobs"
+            );
+
+
+            createChart(
+                "companiesChart",
+                "bar",
+                data.companies.labels,
+                data.companies.data,
+                "Jobs"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Unable to load chart data:",
+                error
+            );
+
+        }
+
+    }
+
+
+    function createChart(
+        id,
+        type,
+        labels,
+        values,
+        label
+    ) {
+
+        const canvas = document.getElementById(id);
+
+        if (!canvas) {
+            return;
+        }
+
+        if (charts[id]) {
+            charts[id].destroy();
+        }
+
+
+        const cssVar = name =>
+            getComputedStyle(document.body).getPropertyValue(name).trim();
+
+        const base = ["--green", "--violet", "--pink", "--blue", "--orange"]
+            .map(cssVar)
+            .filter(c => /^#[0-9a-fA-F]{6}$/.test(c));
+
+        const colors = base.length
+            ? base.concat(base.slice(0, 3).map(c => c + "b3"))
+            : ["#4e9b79", "#c99155", "#c8788d", "#7b858f"];
+
+
+        Chart.defaults.font.family = '"Merriweather", Georgia, serif';
+
+        const commonOptions = {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    display: type === "doughnut",
+                    position: "right",
+                    labels: {
+                        color: getComputedStyle(
+                            document.body
+                        ).getPropertyValue("--text"),
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+
+            },
+
+            scales: type !== "doughnut"
+                ? {
+
+                    x: {
+                        ticks: {
+                            color: getComputedStyle(
+                                document.body
+                            ).getPropertyValue("--muted"),
+
+                            font: {
+                                size: 10
+                            }
+                        },
+
+                        grid: {
+                            color: getComputedStyle(
+                                document.body
+                            ).getPropertyValue("--border")
+                        }
+                    },
+
+                    y: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            color: getComputedStyle(
+                                document.body
+                            ).getPropertyValue("--muted"),
+
+                            font: {
+                                size: 10
+                            }
+                        },
+
+                        grid: {
+                            color: getComputedStyle(
+                                document.body
+                            ).getPropertyValue("--border")
+                        }
+                    }
+
+                }
+                : undefined
+
+        };
+
+
+        charts[id] = new Chart(
+            canvas,
+            {
+
+                type: type,
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [
+
+                        {
+                            label: label,
+
+                            data: values,
+
+                            backgroundColor:
+                                type === "doughnut"
+                                    ? colors
+                                    : colors[0],
+
+                            borderColor:
+                                type === "doughnut"
+                                    ? colors
+                                    : colors[0],
+
+                            borderWidth: 1,
+
+                            borderRadius:
+                                type === "bar"
+                                    ? 5
+                                    : 0
+
+                        }
+
+                    ]
+
+                },
+
+                options: commonOptions
+
+            }
+        );
+
+    }
+
+
+    /* =========================
+       JOBS
+    ========================== */
+
+    async function loadJobs() {
+
+        const table =
+            document.getElementById("jobsTable");
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="7" class="loading">
+                    Loading jobs...
+                </td>
+            </tr>
+        `;
+
+
+        const search =
+            document.getElementById("jobSearch").value.trim();
+
+        const remote =
+            document.getElementById("remoteFilter").value;
+
+
+        const params = new URLSearchParams();
+
+        params.set("limit", "60");
+
+        if (search) {
+            params.set("search", search);
+        }
+
+        if (remote) {
+            params.set("remote", remote);
+        }
+
+
+        try {
+
+            const response =
+                await fetch("/api/jobs?" + params.toString());
+
+            if (!response.ok) {
+                throw new Error("Jobs request failed");
+            }
+
+            const jobs = await response.json();
+
+
+            if (!jobs.length) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="loading">
+                            No jobs found.
+                        </td>
+                    </tr>
+                `;
+
                 return;
             }
 
-            let html = '';
-            for (const j of jobs) {
-                const remoteClass = j.remote_type === 'Remote' ? 'badge-remote' : (j.remote_type === 'Hybrid' ? 'badge-hybrid' : 'badge-onsite');
-                const skills = (j.skills || '').split(',').filter(s => s.trim().length > 0);
-                const skillBadges = skills.slice(0, 3).map(s => `<span class="badge badge-skill">${s.trim()}</span>`).join('');
 
-                html += `
+            table.innerHTML = jobs.map(job => {
+
+                const remoteClass =
+                    job.remote_type === "Remote"
+                        ? "remote"
+                        : "onsite";
+
+
+                return `
+
                     <tr>
-                        <td style="font-weight: 600; color: #ffffff;">${escapeHtml(j.title)}</td>
-                        <td>${escapeHtml(j.company)}</td>
-                        <td><span style="color: #cbd5e1;">📍 ${escapeHtml(j.location)}</span></td>
-                        <td><span class="badge ${remoteClass}">${escapeHtml(j.remote_type)}</span></td>
-                        <td><span class="badge badge-stipend">${escapeHtml(j.stipend_or_salary)}</span></td>
-                        <td>${skillBadges || '<span style="color: #64748b; font-size: 0.75rem;">None</span>'}</td>
+
+                        <td>
+                            <div class="job-title">
+                                ${escapeHtml(job.title || "—")}
+                            </div>
+                        </td>
+
+                        <td>
+                            ${escapeHtml(job.company || "—")}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(job.location || "—")}
+                        </td>
+
+                        <td>
+                            <span class="badge ${remoteClass}">
+                                ${escapeHtml(job.remote_type || "—")}
+                            </span>
+                        </td>
+
+                        <td>
+                            ${escapeHtml(job.job_level || "—")}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(job.stipend_or_salary || "—")}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(job.skills || "—")}
+                        </td>
+
                     </tr>
+
                 `;
+
+            }).join("");
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="7" class="error">
+                        Unable to load jobs.
+                    </td>
+                </tr>
+            `;
+
+        }
+
+    }
+
+
+    /* =========================
+       AI ASSISTANT
+    ========================== */
+
+    const AI_ICONS = {
+        copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>',
+        retry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>'
+    };
+
+    const AI_COLORS = [
+        "var(--green)",
+        "var(--violet)",
+        "var(--blue)",
+        "var(--orange)",
+        "var(--pink)"
+    ];
+
+    let aiBusy = false;
+    let aiSession = 0;
+    let lastQuestion = "";
+
+
+    function handleQuestion(event) {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey &&
+            !event.isComposing
+        ) {
+            event.preventDefault();
+            sendQuestion();
+        }
+
+    }
+
+
+    function autoGrow(element) {
+
+        element.style.height = "auto";
+
+        element.style.height =
+            Math.min(element.scrollHeight, 140) + "px";
+
+        updateSendState();
+
+    }
+
+
+    function updateSendState() {
+
+        const input = document.getElementById("questionInput");
+        const button = document.getElementById("sendButton");
+
+        button.disabled = aiBusy || !input.value.trim();
+
+    }
+
+
+    function askSuggestion(question) {
+
+        if (aiBusy) {
+            return;
+        }
+
+        const input = document.getElementById("questionInput");
+
+        input.value = question;
+
+        sendQuestion();
+
+    }
+
+
+    function formatAnswer(text) {
+
+        const lines = escapeHtml(text).split(/\r?\n/);
+
+        let html = "";
+        let list = null;
+        let paragraph = [];
+        let tableLines = [];
+
+        const inline = value =>
+            value
+                .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+                .replace(/`([^`]+)`/g, "<code>$1</code>");
+
+        const flushParagraph = () => {
+            if (paragraph.length) {
+                html += "<p>" + paragraph.map(inline).join("<br>") + "</p>";
+                paragraph = [];
             }
-            tbody.innerHTML = html;
-        }
+        };
 
-        function filterJobs() {
-            const search = document.getElementById('tableSearch').value.toLowerCase();
-            const modality = document.getElementById('modalitySelect').value;
-
-            const filtered = allJobs.filter(j => {
-                const matchesSearch = !search || 
-                    (j.title && j.title.toLowerCase().includes(search)) ||
-                    (j.company && j.company.toLowerCase().includes(search)) ||
-                    (j.location && j.location.toLowerCase().includes(search)) ||
-                    (j.skills && j.skills.toLowerCase().includes(search));
-
-                const matchesModality = !modality || j.remote_type === modality;
-
-                return matchesSearch && matchesModality;
-            });
-
-            renderJobsTable(filtered);
-        }
-
-        // Q&A Interaction
-        function askPreset(question) {
-            document.getElementById('qaInput').value = question;
-            submitQuestion();
-        }
-
-        function handleInputKey(e) {
-            if (e.key === 'Enter') {
-                submitQuestion();
+        const closeList = () => {
+            if (list) {
+                html += "</" + list + ">";
+                list = null;
             }
-        }
+        };
 
-        async function submitQuestion() {
-            const input = document.getElementById('qaInput');
-            const q = input.value.trim();
-            if (!q) return;
+        const tableHtml = (head, body) => {
 
-            const box = document.getElementById('qaResponse');
-            const loading = document.getElementById('qaLoading');
-            const content = document.getElementById('qaContent');
-            const sqlDiv = document.getElementById('qaSql');
-            const btn = document.getElementById('qaSubmitBtn');
+            const ths = head.map((cell, i) =>
+                `<th scope="col" aria-sort="none"><button type="button" class="th-btn" data-col="${i}" onclick="sortTable(this)"><span>${inline(cell)}</span><i class="arrow" aria-hidden="true"></i></button></th>`
+            ).join("");
 
-            box.classList.add('active');
-            loading.style.display = 'block';
-            content.innerHTML = '';
-            sqlDiv.style.display = 'none';
-            btn.disabled = true;
+            const trs = body.map((cells, n) =>
+                `<tr data-i="${n}"><td class="rank"><span class="rank-chip">${n + 1}</span></td>${cells.map(cell => `<td>${inline(cell)}</td>`).join("")}</tr>`
+            ).join("");
 
-            try {
-                const res = await fetch('/api/ask', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question: q })
+            const count = body.length + " " + (body.length === 1 ? "match" : "matches");
+
+            return `<div class="tbl"><div class="tbl-bar"><span class="tbl-cap">${count}</span><button type="button" class="mini-btn" onclick="resetTable(this)">Original order</button></div><div class="tbl-scroll"><table class="answer-table"><thead><tr><th class="rank" scope="col">#</th>${ths}</tr></thead><tbody>${trs}</tbody></table></div></div>`;
+
+        };
+
+        const flushTable = () => {
+
+            if (!tableLines.length) {
+                return;
+            }
+
+            const split = row =>
+                row.replace(/^\|/, "").replace(/\|$/, "").split("|").map(cell => cell.trim());
+
+            const isSeparator = cells =>
+                cells.length > 0 && cells.every(cell => /^:?-{2,}:?$/.test(cell));
+
+            const parsed = tableLines.map(split);
+
+            if (parsed.length >= 3 && isSeparator(parsed[1])) {
+
+                const head = parsed[0];
+                const cols = head.length;
+
+                const body = parsed
+                    .slice(2)
+                    .filter(cells => !isSeparator(cells))
+                    .map(cells => {
+                        if (cells.length > cols) {
+                            cells = cells.slice(0, cols - 1)
+                                .concat(cells.slice(cols - 1).join(" | "));
+                        }
+                        while (cells.length < cols) {
+                            cells.push("");
+                        }
+                        return cells;
+                    });
+
+                html += tableHtml(head, body);
+
+            } else {
+
+                paragraph.push(...tableLines);
+                flushParagraph();
+
+            }
+
+            tableLines = [];
+
+        };
+
+        lines.forEach(raw => {
+
+            const line = raw.trim();
+
+            if (line.startsWith("|")) {
+                flushParagraph();
+                closeList();
+                tableLines.push(line);
+                return;
+            }
+
+            flushTable();
+
+            const bullet = line.match(/^[-*\u2022]\s+(.*)/);
+            const number = line.match(/^\d+[.)]\s+(.*)/);
+
+            if (bullet || number) {
+
+                flushParagraph();
+
+                const type = bullet ? "ul" : "ol";
+
+                if (list !== type) {
+                    closeList();
+                    html += "<" + type + ">";
+                    list = type;
+                }
+
+                html += "<li>" + inline((bullet || number)[1]) + "</li>";
+
+            } else if (!line) {
+
+                flushParagraph();
+                closeList();
+
+            } else {
+
+                closeList();
+                paragraph.push(line);
+
+            }
+
+        });
+
+        flushTable();
+        flushParagraph();
+        closeList();
+
+        return html;
+
+    }
+
+
+    function barRows(rows, unit) {
+
+        const max = Math.max(...rows.map(row => row.value)) || 1;
+
+        const wrap = document.createElement("div");
+        wrap.className = "bars";
+
+        rows.forEach((row, index) => {
+
+            const line = document.createElement("div");
+            line.className = "bar-row";
+            line.style.setProperty("--c", AI_COLORS[index % AI_COLORS.length]);
+
+            const label = document.createElement("span");
+            label.className = "bar-label";
+            label.textContent = row.label;
+            label.title = row.label;
+
+            const track = document.createElement("span");
+            track.className = "bar-track";
+
+            const fill = document.createElement("span");
+            fill.className = "bar-fill";
+            fill.dataset.w = Math.max(4, (row.value / max) * 100);
+            track.appendChild(fill);
+
+            const value = document.createElement("span");
+            value.className = "bar-value";
+            value.textContent = formatNumber(row.value) + (unit || "");
+
+            line.append(label, track, value);
+            wrap.appendChild(line);
+
+        });
+
+        return wrap;
+
+    }
+
+
+    function growBars(root) {
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                root.querySelectorAll(".bar-fill").forEach(fill => {
+                    fill.style.width = fill.dataset.w + "%";
                 });
-                const data = await res.json();
+            });
+        });
 
-                loading.style.display = 'none';
-                btn.disabled = false;
+    }
 
-                if (data.answer) {
-                    content.innerHTML = formatMarkdown(data.answer);
-                } else if (data.error) {
-                    content.innerHTML = `<span style="color: #f87171;">${data.error}</span>`;
-                }
 
-                if (data.sql) {
-                    sqlDiv.style.display = 'block';
-                    sqlDiv.innerText = `🔍 Verified Query: ${data.sql.replace(/\s+/g, ' ')}`;
-                }
+    function extractChartRows(text) {
 
-            } catch (err) {
-                loading.style.display = 'none';
-                btn.disabled = false;
-                content.innerHTML = `<span style="color: #f87171;">Failed to connect to Q&A agent: ${err}</span>`;
+        const pattern =
+            /^(?:[-*\u2022]|\d+[.)])?\s*\**([^:()*]{1,40}?)\**\s*(?::|\s[-\u2013\u2014]\s|\()\s*(\d[\d,]*(?:\.\d+)?)\s*(%|jobs?|postings?|openings?|listings?)?\s*\)?\.?\s*$/i;
+
+        const rows = [];
+        let unit = "";
+
+        text.split(/\r?\n/).forEach(line => {
+
+            if (line.trim().startsWith("|")) {
+                return;
             }
-        }
 
-        async function triggerParseBatch() {
-            const btn = event.target;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ Parsing & Tagging...';
-            btn.disabled = true;
+            const match = line.trim().match(pattern);
 
-            try {
-                const res = await fetch('/api/process?batch=150', { method: 'POST' });
-                const data = await res.json();
-                alert(`Successfully cleaned and tagged ${data.processed_count} additional jobs!`);
-                await refreshDashboard();
-            } catch (err) {
-                alert(`Error processing jobs: ${err}`);
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+            if (!match) {
+                return;
             }
+
+            const value = parseFloat(match[2].replace(/,/g, ""));
+
+            if (!isFinite(value) || value <= 0) {
+                return;
+            }
+
+            if (match[3] === "%") {
+                unit = "%";
+            }
+
+            rows.push({
+                label: match[1].trim(),
+                value: value
+            });
+
+        });
+
+        return rows.length >= 3
+            ? { rows: rows.slice(0, 8), unit: unit }
+            : null;
+
+    }
+
+
+    function addAnswerChart(row, text) {
+
+        const found = extractChartRows(text);
+
+        if (!found) {
+            return;
         }
 
-        async function refreshDashboard() {
-            await initDashboard();
+        const card = document.createElement("div");
+        card.className = "answer-chart";
+
+        const title = document.createElement("h4");
+        title.textContent = "Chart view";
+
+        const bars = barRows(found.rows, found.unit);
+
+        card.append(title, bars);
+
+        row.querySelector(".ai-body")
+            .insertBefore(card, row.querySelector(".msg-actions"));
+
+        growBars(card);
+
+    }
+
+
+    async function loadSnapshot() {
+
+        const box = document.getElementById("aiSnapshot");
+
+        if (!box) {
+            return;
         }
 
-        function formatMarkdown(md) {
-            // Converts simple markdown tables and bullets into clean HTML
-            let html = md;
-            
-            // Convert markdown tables
-            if (html.includes('|')) {
-                const lines = html.split('\n');
-                let inTable = false;
-                let tableHtml = '<table class="dark-table" style="margin: 1rem 0;">';
-                let newLines = [];
+        try {
 
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    if (line.startsWith('|') && line.endsWith('|')) {
-                        if (!inTable) {
-                            inTable = true;
-                            tableHtml = '<table class="dark-table" style="margin: 1rem 0;">';
-                        }
-                        if (line.includes('---')) continue; // Skip separator line
+            const response = await fetch("/api/chart-data");
 
-                        const cells = line.split('|').slice(1, -1).map(c => c.trim());
-                        const isHeader = !tableHtml.includes('<tbody>');
-                        
-                        if (isHeader) {
-                            tableHtml += '<thead><tr>' + cells.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
-                        } else {
-                            tableHtml += '<tr>' + cells.map(c => `<td>${c}</td>`).join('') + '</tr>';
-                        }
-                    } else {
-                        if (inTable) {
-                            inTable = false;
-                            tableHtml += '</tbody></table>';
-                            newLines.push(tableHtml);
-                        }
-                        newLines.push(line);
+            if (!response.ok) {
+                throw new Error("No chart data");
+            }
+
+            const data = await response.json();
+
+            const top = (set, count) =>
+                (set.labels || [])
+                    .slice(0, count)
+                    .map((label, i) => ({
+                        label: String(label),
+                        value: Number(set.data[i]) || 0
+                    }))
+                    .filter(row => row.value > 0);
+
+            const skills = top(data.skills, 4);
+            const companies = top(data.companies, 4);
+            const remote = top(data.remote, 3);
+
+            if (!skills.length && !companies.length && !remote.length) {
+                return;
+            }
+
+            const fill = (id, rows) => {
+                const target = document.getElementById(id);
+                target.innerHTML = "";
+                if (rows.length) {
+                    target.appendChild(barRows(rows));
+                }
+            };
+
+            fill("snapSkills", skills);
+            fill("snapCompanies", companies);
+
+            const holder = document.getElementById("snapRemote");
+            holder.innerHTML = "";
+
+            if (remote.length) {
+
+                const total = remote.reduce((sum, row) => sum + row.value, 0);
+
+                const split = document.createElement("div");
+                split.className = "split-bar";
+
+                const legend = document.createElement("div");
+                legend.className = "split-legend";
+
+                remote.forEach((row, index) => {
+
+                    const color = AI_COLORS[(index * 2) % AI_COLORS.length];
+
+                    const part = document.createElement("span");
+                    part.style.setProperty("--c", color);
+                    part.style.flex = row.value;
+                    split.appendChild(part);
+
+                    const item = document.createElement("div");
+                    item.style.setProperty("--c", color);
+
+                    const dot = document.createElement("i");
+                    const name = document.createElement("span");
+                    name.textContent = row.label;
+                    const pct = document.createElement("b");
+                    pct.textContent = Math.round((row.value / total) * 100) + "%";
+
+                    item.append(dot, name, pct);
+                    legend.appendChild(item);
+
+                });
+
+                holder.append(split, legend);
+
+            }
+
+            box.hidden = false;
+
+            growBars(box);
+
+        } catch (error) {
+
+            console.error("Snapshot unavailable:", error);
+
+        }
+
+    }
+
+
+    function parsePay(text) {
+
+        const t = text.toLowerCase().replace(/,/g, "");
+
+        const nums = (t.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+
+        if (!nums.length) {
+            return -1;
+        }
+
+        const isRange = /\d\s*(?:-|\u2013|\u2014|to)\s*\d/.test(t) && nums.length > 1;
+
+        let value = isRange ? (nums[0] + nums[1]) / 2 : nums[0];
+
+        if (/lpa|lakh/.test(t)) {
+            value = value * 100000 / 12;
+        } else if (/year|annum|p\.a|yr/.test(t)) {
+            value = value / 12;
+        }
+
+        return value;
+
+    }
+
+
+    function initTables(root) {
+
+        root.querySelectorAll(".tbl").forEach(box => {
+
+            const heads = [...box.querySelectorAll(".th-btn")]
+                .map(button => button.textContent.trim());
+
+            const payCol = heads.findIndex(h => /stipend|salary|pay|ctc|compensation/i.test(h));
+            const modeCol = heads.findIndex(h => /modality|mode|work type|remote/i.test(h));
+
+            box.dataset.pay = payCol;
+
+            const rows = [...box.querySelectorAll("tbody tr")];
+
+            if (payCol >= 0) {
+
+                let max = 0;
+
+                rows.forEach(row => {
+                    const pay = parsePay(row.cells[payCol + 1].textContent);
+                    row.dataset.pay = pay;
+                    max = Math.max(max, pay);
+                });
+
+                rows.forEach(row => {
+
+                    const cell = row.cells[payCol + 1];
+                    const pay = Number(row.dataset.pay);
+
+                    cell.classList.add("pay");
+
+                    if (pay > 0 && max > 0) {
+                        const bar = document.createElement("span");
+                        bar.className = "paybar";
+                        const fill = document.createElement("i");
+                        fill.style.width = Math.max(6, (pay / max) * 100) + "%";
+                        bar.appendChild(fill);
+                        cell.appendChild(bar);
                     }
-                }
-                if (inTable) {
-                    tableHtml += '</tbody></table>';
-                    newLines.push(tableHtml);
-                }
-                html = newLines.join('\n');
+
+                });
+
             }
 
-            // Bold
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            // Inline code
-            html = html.replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px;">$1</code>');
-            // Bullets
-            html = html.replace(/^\s*-\s+(.*?)$/gm, '<li style="margin-left: 1.5rem;">$1</li>');
-            // Line breaks
-            html = html.replace(/\n\n/g, '<br><br>');
+            if (modeCol >= 0) {
 
-            return html;
+                rows.forEach(row => {
+
+                    const cell = row.cells[modeCol + 1];
+                    const text = cell.textContent.trim().toLowerCase();
+
+                    let tone = "";
+
+                    if (/remote|home|wfh/.test(text)) {
+                        tone = "green";
+                    } else if (/hybrid/.test(text)) {
+                        tone = "violet";
+                    } else if (/on-?site|office/.test(text)) {
+                        tone = "blue";
+                    }
+
+                    if (tone) {
+                        cell.innerHTML =
+                            `<span class="badge ${tone}">${cell.innerHTML}</span>`;
+                    }
+
+                });
+
+            }
+
+            if (payCol >= 0) {
+                sortTableBy(box, payCol, "desc");
+            }
+
+        });
+
+    }
+
+
+    function renumber(box) {
+
+        [...box.querySelectorAll("tbody tr")].forEach((row, index) => {
+            row.querySelector(".rank-chip").textContent = index + 1;
+        });
+
+    }
+
+
+    function sortTableBy(box, col, dir) {
+
+        const body = box.querySelector("tbody");
+        const rows = [...body.rows];
+        const numeric = col === Number(box.dataset.pay);
+        const sign = dir === "asc" ? 1 : -1;
+
+        rows.sort((a, b) => {
+
+            let diff;
+
+            if (numeric) {
+
+                const x = Number(a.dataset.pay);
+                const y = Number(b.dataset.pay);
+
+                if ((x < 0) !== (y < 0)) {
+                    return x < 0 ? 1 : -1;
+                }
+
+                diff = x - y;
+
+            } else {
+
+                diff = a.cells[col + 1].textContent.trim().localeCompare(
+                    b.cells[col + 1].textContent.trim(),
+                    undefined,
+                    { numeric: true, sensitivity: "base" }
+                );
+
+            }
+
+            return diff ? diff * sign : Number(a.dataset.i) - Number(b.dataset.i);
+
+        });
+
+        rows.forEach(row => body.appendChild(row));
+
+        renumber(box);
+
+        box.querySelectorAll("th").forEach(th => th.setAttribute("aria-sort", "none"));
+
+        box.querySelectorAll(".th-btn").forEach(button => {
+            button.dataset.dir = "";
+        });
+
+        const active = box.querySelector('.th-btn[data-col="' + col + '"]');
+
+        active.dataset.dir = dir;
+
+        active.closest("th").setAttribute(
+            "aria-sort",
+            dir === "asc" ? "ascending" : "descending"
+        );
+
+        box.classList.toggle("by-pay", numeric && dir === "desc");
+
+        box.dataset.sortCol = col;
+        box.dataset.sortDir = dir;
+
+        let label;
+
+        if (numeric) {
+            label = dir === "desc" ? "highest pay first" : "lowest pay first";
+        } else {
+            label = "sorted by " + active.textContent.trim().toLowerCase() +
+                (dir === "asc" ? ", A to Z" : ", Z to A");
         }
 
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str).replace(/[&<>"']/g, function(m) {
-                return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[m];
+        box.querySelector(".tbl-cap").textContent =
+            rows.length + " " + (rows.length === 1 ? "match" : "matches") + ", " + label;
+
+    }
+
+
+    function sortTable(button) {
+
+        const box = button.closest(".tbl");
+        const col = Number(button.dataset.col);
+
+        const same = box.dataset.sortCol === String(col);
+        const first = col === Number(box.dataset.pay) ? "desc" : "asc";
+
+        const dir = same
+            ? (box.dataset.sortDir === "asc" ? "desc" : "asc")
+            : first;
+
+        sortTableBy(box, col, dir);
+
+    }
+
+
+    function resetTable(button) {
+
+        const box = button.closest(".tbl");
+        const body = box.querySelector("tbody");
+
+        [...body.rows]
+            .sort((a, b) => Number(a.dataset.i) - Number(b.dataset.i))
+            .forEach(row => body.appendChild(row));
+
+        renumber(box);
+
+        box.querySelectorAll("th").forEach(th => th.setAttribute("aria-sort", "none"));
+
+        box.querySelectorAll(".th-btn").forEach(btn => {
+            btn.dataset.dir = "";
+        });
+
+        box.classList.remove("by-pay");
+
+        delete box.dataset.sortCol;
+        delete box.dataset.sortDir;
+
+        const count = body.rows.length;
+
+        box.querySelector(".tbl-cap").textContent =
+            count + " " + (count === 1 ? "match" : "matches") + ", in the original order";
+
+    }
+
+
+    function revealAnswer(row) {
+
+        const chat = document.getElementById("chatArea");
+
+        const chatBox = chat.getBoundingClientRect();
+        const rowBox = row.getBoundingClientRect();
+
+        if (rowBox.height > chatBox.height - 40) {
+            chat.scrollTop += rowBox.top - chatBox.top - 16;
+        } else {
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+    }
+
+
+    function scrollChat() {
+
+        const chat = document.getElementById("chatArea");
+
+        chat.scrollTop = chat.scrollHeight;
+
+    }
+
+
+    function addUserMessage(text) {
+
+        const row = document.createElement("div");
+        row.className = "msg user";
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.textContent = text;
+
+        row.appendChild(bubble);
+
+        document.getElementById("chatArea").appendChild(row);
+
+    }
+
+
+    function addAiMessage() {
+
+        const row = document.createElement("div");
+        row.className = "msg ai";
+
+        row.innerHTML = `
+            <span class="orb mini thinking" aria-hidden="true"></span>
+            <div class="ai-body">
+                <div class="answer">
+                    <div class="typing" aria-label="Assistant is thinking">
+                        <i></i><i></i><i></i>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById("chatArea").appendChild(row);
+
+        return row;
+
+    }
+
+
+    function finishAiMessage(row, html, failed, rawText) {
+
+        const answer = row.querySelector(".answer");
+
+        answer.innerHTML = html;
+
+        if (!failed) {
+
+            initTables(answer);
+
+            row.classList.toggle("wide", !!answer.querySelector(".tbl"));
+
+            if (rawText) {
+                row.dataset.raw = rawText;
+            }
+
+        }
+
+        answer.classList.toggle("error", !!failed);
+
+        row.querySelector(".orb").classList.remove("thinking");
+
+        const actions = document.createElement("div");
+        actions.className = "msg-actions";
+
+        actions.innerHTML = failed
+            ? `<button class="mini-btn" type="button" onclick="retryLast(this)">${AI_ICONS.retry}<span>Try again</span></button>`
+            : `<button class="mini-btn" type="button" onclick="copyAnswer(this)">${AI_ICONS.copy}<span>Copy</span></button>`;
+
+        row.querySelector(".ai-body").appendChild(actions);
+
+        if (!failed && rawText) {
+            addAnswerChart(row, rawText);
+        }
+
+    }
+
+
+    async function sendQuestion() {
+
+        const input = document.getElementById("questionInput");
+
+        const question = input.value.trim();
+
+        if (!question || aiBusy) {
+            return;
+        }
+
+        document.getElementById("aiShell").classList.add("has-messages");
+
+        addUserMessage(question);
+
+        input.value = "";
+
+        autoGrow(input);
+
+        await respondTo(question);
+
+    }
+
+
+    async function respondTo(question) {
+
+        const session = aiSession;
+
+        lastQuestion = question;
+
+        aiBusy = true;
+
+        updateSendState();
+
+        const row = addAiMessage();
+
+        scrollChat();
+
+        try {
+
+            const response = await fetch(
+                "/api/ask",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        question: question
+                    })
+
+                }
+            );
+
+            const result = await response.json();
+
+            const answer =
+                result.answer ||
+                result.response ||
+                result.message ||
+                result.error ||
+                "I couldn't find an answer.";
+
+            finishAiMessage(row, formatAnswer(answer), false, String(answer));
+
+        } catch (error) {
+
+            console.error(error);
+
+            finishAiMessage(
+                row,
+                "<p>Couldn't reach the assistant. Check that the backend is running, then try again.</p>",
+                true
+            );
+
+        } finally {
+
+            if (session === aiSession) {
+
+                aiBusy = false;
+
+                updateSendState();
+
+                revealAnswer(row);
+
+                document.getElementById("questionInput").focus();
+
+            }
+
+        }
+
+    }
+
+
+    function retryLast(button) {
+
+        if (aiBusy || !lastQuestion) {
+            return;
+        }
+
+        button.closest(".msg").remove();
+
+        respondTo(lastQuestion);
+
+    }
+
+
+    function copyAnswer(button) {
+
+        const message = button.closest(".msg");
+
+        const text =
+            message.dataset.raw ||
+            message.querySelector(".answer").innerText;
+
+        const label = button.querySelector("span");
+
+        const done = () => {
+            label.textContent = "Copied";
+            setTimeout(() => {
+                label.textContent = "Copy";
+            }, 1600);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(() => {
+                label.textContent = "Copy failed";
             });
         }
 
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', initDashboard);
-    </script>
+    }
+
+
+    function newChat() {
+
+        aiSession++;
+
+        aiBusy = false;
+
+        document
+            .querySelectorAll("#chatArea .msg")
+            .forEach(message => message.remove());
+
+        document.getElementById("aiShell").classList.remove("has-messages");
+
+        const input = document.getElementById("questionInput");
+
+        input.value = "";
+
+        autoGrow(input);
+
+        input.focus();
+
+        loadSnapshot();
+
+    }
+
+
+    const PALETTES = ["ocean", "berry", "violet", "classic", "graphite", "custom"];
+    const CUSTOM_VARS = ["--green", "--violet", "--blue", "--orange", "--pink", "--tint", "--on-accent"];
+
+    function mixHex(a, b, t) {
+        const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+        const x = p(a), y = p(b);
+        return "#" + x.map((v, i) =>
+            Math.round(v * (1 - t) + y[i] * t).toString(16).padStart(2, "0")
+        ).join("");
+    }
+
+    function applyCustom(hex) {
+        const dark = document.body.classList.contains("dark-mode");
+        const base = dark ? mixHex(hex, "#ffffff", 0.35) : hex;
+        const st = document.body.style;
+        st.setProperty("--green", base);
+        st.setProperty("--violet", mixHex(base, "#ffffff", 0.2));
+        st.setProperty("--blue", mixHex(base, "#3b82f6", 0.5));
+        st.setProperty("--orange", mixHex(base, "#ffffff", 0.55));
+        st.setProperty("--pink", mixHex(base, "#d07ae3", 0.5));
+        st.setProperty("--tint", base);
+        st.setProperty("--on-accent", dark ? "#101418" : "#ffffff");
+    }
+
+    function refreshCharts() {
+        if (document.querySelector("#analytics.active")) {
+            createCharts();
+        }
+    }
+
+    function setPalette(name, skipSave) {
+
+        if (!PALETTES.includes(name)) {
+            name = "ocean";
+        }
+
+        document.body.dataset.palette = name;
+
+        if (name === "custom") {
+            let hex = document.getElementById("customColor").value;
+            applyCustom(hex);
+        } else {
+            CUSTOM_VARS.forEach(v => document.body.style.removeProperty(v));
+        }
+
+        document.querySelectorAll(".swatch").forEach(swatch => {
+            swatch.setAttribute(
+                "aria-pressed",
+                swatch.dataset.p === name ? "true" : "false"
+            );
+        });
+
+        if (!skipSave) {
+            try {
+                localStorage.setItem("jobiq-palette", name);
+            } catch (error) {
+                /* storage unavailable, keep the theme for this visit only */
+            }
+        }
+
+        refreshCharts();
+
+    }
+
+
+    function setCustomColour(hex) {
+
+        document.getElementById("customColor").value = hex;
+
+        try {
+            localStorage.setItem("jobiq-custom", hex);
+        } catch (error) {
+            /* storage unavailable */
+        }
+
+        setPalette("custom");
+
+    }
+
+
+    function loadPalette() {
+
+        let saved = "ocean";
+
+        try {
+            saved = localStorage.getItem("jobiq-palette") || "ocean";
+            const custom = localStorage.getItem("jobiq-custom");
+            if (custom && /^#[0-9a-fA-F]{6}$/.test(custom)) {
+                document.getElementById("customColor").value = custom;
+            }
+        } catch (error) {
+            saved = "ocean";
+        }
+
+        setPalette(saved, true);
+
+    }
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadPalette();
+        loadSnapshot();
+    });
+
+
+/* =========================
+       PROCESS JOBS
+    ========================== */
+
+    async function processJobs() {
+
+        const button =
+            document.querySelector(".quick-action");
+
+        const original =
+            button.innerHTML;
+
+        button.innerHTML =
+            "<span>⏳</span><span>Processing...</span>";
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/process?batch=150",
+                    {
+                        method: "POST"
+                    }
+                );
+
+            if (!response.ok) {
+                throw new Error("Processing failed");
+            }
+
+            await loadAllData();
+
+            alert("Jobs processed successfully.");
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Unable to process jobs. Check the backend."
+            );
+
+        }
+
+        button.innerHTML = original;
+
+    }
+
+
+    /* =========================
+       REFRESH EVERYTHING
+    ========================== */
+
+    async function loadAllData() {
+
+        await loadStats();
+
+        const activePage =
+            document.querySelector(".page.active");
+
+        if (
+            activePage &&
+            activePage.id === "analytics"
+        ) {
+            createCharts();
+        }
+
+        if (
+            activePage &&
+            activePage.id === "jobs"
+        ) {
+            loadJobs();
+        }
+
+    }
+
+
+    /* =========================
+       THEME
+    ========================== */
+
+    function toggleTheme() {
+
+        document.body.classList.toggle(
+            "dark-mode"
+        );
+
+
+        const dark =
+            document.body.classList.contains(
+                "dark-mode"
+            );
+
+
+        localStorage.setItem(
+            "jobiq-theme",
+            dark ? "dark" : "light"
+        );
+
+
+        document.getElementById(
+            "themeToggle"
+        ).textContent =
+            dark ? "☀" : "☾";
+
+
+        if (document.body.dataset.palette === "custom") {
+            applyCustom(document.getElementById("customColor").value);
+        }
+
+
+        refreshCharts();
+
+    }
+
+
+    function loadTheme() {
+
+        const saved =
+            localStorage.getItem(
+                "jobiq-theme"
+            );
+
+
+        if (saved === "dark") {
+
+            document.body.classList.add(
+                "dark-mode"
+            );
+
+            document.getElementById(
+                "themeToggle"
+            ).textContent = "☀";
+
+            if (document.body.dataset.palette === "custom") {
+                applyCustom(document.getElementById("customColor").value);
+            }
+
+        }
+
+    }
+
+
+    /* =========================
+       GLOBAL SEARCH
+    ========================== */
+
+    function globalSearch(event) {
+
+        if (event.key !== "Enter") {
+            return;
+        }
+
+        const value =
+            event.target.value.trim();
+
+
+        if (!value) {
+            return;
+        }
+
+
+        showPageById("jobs");
+
+
+        setTimeout(() => {
+
+            const jobSearch =
+                document.getElementById(
+                    "jobSearch"
+                );
+
+            jobSearch.value = value;
+
+            loadJobs();
+
+        }, 100);
+
+    }
+
+
+    /* =========================
+       UTILITIES
+    ========================== */
+
+    function formatNumber(number) {
+
+        return Number(number).toLocaleString(
+            "en-IN"
+        );
+
+    }
+
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* =========================
+       DATE / TIME
+    ========================== */
+
+    function updateDateTime() {
+
+        const now = new Date();
+
+
+        document.getElementById(
+            "currentDate"
+        ).textContent =
+            now.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+
+        document.getElementById(
+            "currentTime"
+        ).textContent =
+            now.toLocaleTimeString(
+                "en-IN",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+    }
+
+
+    /* =========================
+       INITIALIZE
+    ========================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        async () => {
+
+            loadTheme();
+
+            updateDateTime();
+
+            setInterval(
+                updateDateTime,
+                30000
+            );
+
+            await loadStats();
+
+        }
+    );
+
+</script>
+
 </body>
 </html>
